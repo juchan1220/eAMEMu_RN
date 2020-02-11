@@ -15,3 +15,6 @@ HCE-F를 이용한 안드로이드 전용 e-AMUSEMENT PASS 에뮬레이션 앱 (
 
 
 이 앱의 빌드에 필요한 일부 코드는 여러 사정 상 업로드 되지 않았습니다.
+
+
+Special Thanks for dogelition_man (https://github.com/ledoge)
