@@ -18,3 +18,8 @@ HCE-F를 이용한 안드로이드 전용 e-AMUSEMENT PASS 에뮬레이션 앱 (
 
 
 Special Thanks for dogelition_man (https://github.com/ledoge)
+
+
+## 정상작동이 확인된 기기
+* 갤럭시 노트 8 (SM-N950N), 안드로이드 9
+* LG V30 (LGM-V300L), 안드로이드 9
