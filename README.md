@@ -27,7 +27,7 @@ Special Thanks for dogelition_man (https://github.com/ledoge)
 * LG V30 (LGM-V300L), 안드로이드 9
 
 ## 테스트 시 작동되지 않은 기기
-** 이 목록은 단순히 참고용으로 적어놓은 것으로, 기기마다의 환경에 따라 아래 목록에 있더라도 정상 동작할 수 있습니다**
+**이 목록은 단순히 참고용으로 적어놓은 것으로, 기기마다의 환경에 따라 아래 목록에 있더라도 정상 동작할 수 있습니다**
 
 * XPERIA XZ2 Compact, 안드로이드 9
 * Mi Note 3, 안드로이드 9
