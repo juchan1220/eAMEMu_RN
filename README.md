@@ -19,15 +19,17 @@ EDIT *중국 제조사 기기, 커스텀 롬 기기, NFC 유심 장착 기기에
 이 앱의 빌드에 필요한 일부 코드는 여러 사정 상 업로드 되지 않았습니다.
 
 
-Special Thanks for dogelition_man (https://github.com/ledoge)
-
-
 ## 정상작동이 확인된 기기
-* 갤럭시 노트 8 (SM-N950N), 안드로이드 9
-* LG V30 (LGM-V300L), 안드로이드 9
+* Galaxy Note 8 (SM-N950N), Android 9
+* LG V30 (LGM-V300L), Android 9
+* Galaxy S10 5G (SM-G977N), Android 10
 
 ## 테스트 시 작동되지 않은 기기
 **이 목록은 단순히 참고용으로 적어놓은 것으로, 기기마다의 환경에 따라 아래 목록에 있더라도 정상 동작할 수 있습니다**
 
-* XPERIA XZ2 Compact, 안드로이드 9
-* Mi Note 3, 안드로이드 9
+* XPERIA XZ2 Compact, Android 9
+* Mi Note 3, Android 9
+
+### Special Thanks for 
+* [@dogelition_man](https://github.com/ledoge) (provide source that converts uid to card number)
+* 한양대학교 리듬게임 소모임 (호환성 테스트)
