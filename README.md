@@ -30,5 +30,5 @@ EDIT *중국 제조사 기기, 커스텀 롬 기기, NFC 유심 장착 기기에
 * Mi Note 3, Android 9
 
 ### Special Thanks for 
-* [@dogelition_man](https://github.com/ledoge) (provide source that converts sid to card number)
+* [@dogelition_man](https://github.com/ledoge) (provide source that convert sid to card number)
 * 한양대학교 리듬게임 소모임 (호환성 테스트)
