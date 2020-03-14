@@ -308,7 +308,7 @@ class CardEditScreen extends React.Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <ScrollView style={{flex: 1, paddingHorizontal: 24, paddingVertical: 16,}}>
+                    <ScrollView style={{flex: 1, paddingHorizontal: 24, paddingTop: 16,}}>
                         <ETextInput title={'카드 이름'} value={this.state.name} onChangeText={text => this.setState({name: text})} ref={ref => this.nameInput = ref}/>
                         <TouchableOpacity onPress={() => this.selectPhoto()}>
                             <ETextInput style={{marginTop: 24,}} title={'카드 배경'} value={this.state.image ? '사진이 선택되었습니다.' : '여기를 눌러 사진을 선택할 수 있습니다.'} editable={false}/>
@@ -377,6 +377,7 @@ class CardEditScreen extends React.Component {
                         <Text style={{fontSize: 14, color: '#9E9E9E', marginTop: 20, fontWeight: 'bold'}}>미리보기</Text>
                         <CardPreview name={this.state.name} uid={this.state.uid} image={this.state.image} cardHeight={this.state.cardHeight ?? 0}/>
 
+                        <View style={{height: 50}}/>
                         </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>
