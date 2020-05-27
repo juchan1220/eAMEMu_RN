@@ -18,6 +18,7 @@ import Hcef from '../module/Hcef';
 import CardConv from '../module/CardConv';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import i18n from 'i18n-js';
 
 
 const RNFS = require('react-native-fs');
@@ -33,9 +34,7 @@ class Card extends React.Component {
     }
 
     render() {
-
         let cardContent = (
-
             <View style={{flex: 1, backgroundColor:'rgba(0,0,0,0.3)', borderRadius:8}}>
                 <View style={{flex: 1,}}>
                     <TouchableOpacity style={{flex: 1}} onPress={this.onPress.bind(this)}>
@@ -48,7 +47,7 @@ class Card extends React.Component {
                                 {this.props.card.uid.substr(0,4)+'-'+this.props.card.uid.substr(4,4)+'-'+this.props.card.uid.substr(8,4)+'-'+this.props.card.uid.substr(12,4)}
                             </Text>
                             <Text style={{paddingTop: 8, textAlign: 'center', alignSelf: 'center', fontSize: 24, color:'#FAFAFA', fontWeight: '500', letterSpacing:-0.5}}>
-                                {this.props.card.enabled ? '터치하여 비활성화' : '터치하여 활성화'}
+                                {this.props.card.enabled ? i18n.t('card_touch_to_disable') : i18n.t('card_touch_to_enable')}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -60,7 +59,7 @@ class Card extends React.Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }} onPress={() => this.props.navigation.navigate('CardEditScreen', {name: this.props.card.name, sid: this.props.card.sid, image: this.props.card.image, index: this.props.index, update: this.props.update})}>
-                        <Text style={{fontSize: 14, color:'#FAFAFA'}}>편집</Text>
+                        <Text style={{fontSize: 14, color:'#FAFAFA'}}>{i18n.t('card_edit')}</Text>
                     </TouchableOpacity>
                     <View style={{width: 1, backgroundColor: '#FAFAFA'}}/>
                     <TouchableOpacity style={{
@@ -68,11 +67,12 @@ class Card extends React.Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }} onPress={() => this.props.delete(this.props.index)}>
-                        <Text style={{fontSize: 14, color:'#ffffff'}}>삭제</Text>
+                        <Text style={{fontSize: 14, color:'#ffffff'}}>{i18n.t('card_delete')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         );
+
         return (
         <View style={[{
             borderRadius: 8,
@@ -114,7 +114,6 @@ class MainScreen extends React.Component {
         cards: [],
         cardHeight: 1,
         support: false,
-        history: {},
     };
 
     async loadCards(){
@@ -122,23 +121,18 @@ class MainScreen extends React.Component {
         this.setState({cards: cardsJson ? JSON.parse(cardsJson) : []});
     }
 
-    async loadHistory(){
-        let historyJson = await AsyncStorage.getItem('history');
-        this.setState({history: historyJson ? JSON.parse(historyJson) : {}});
-    }
-
     componentDidMount(){
         this.prevCard = null;
         this.prevIndex = -1;
         this.loadCards();
-        this.loadHistory();
 
         if(Hcef.support !== true){
-            Alert.alert("이 기기는 지원하지 않습니다.", "이 기기는 앱을 실행하기 위해 필요한 기능을 가지고 있지 않습니다. 앱을 사용해도 카드를 에뮬레이션 할 수 없습니다.",
-                [{text: '확인', onPress: () => {}}]);
+            Alert.alert(i18n.t('alert_not_support_title'), i18n.t('alert_not_support_content'),
+                [{text: i18n.t('alert_not_support_yes')}]);
         }
         else if(Hcef.enabled !== true){
-            Alert.alert("NFC가 활성화 되어있지 않습니다.", "이 앱을 사용하기 위해서는 NFC가 필요합니다. 설정에서 NFC를 활성화하고 기본 NFC 설정이 존재한다면 안드로이드 운영체제 혹은 자동 선택으로 설정하고 앱을 재실행해주세요.");
+            Alert.alert(i18n.t('alert_nfc_title'), i18n.t('alert_nfc_content'),
+                [{text: i18n.t('alert_nfc_yes')}]);
         }
 
         if(Hcef.support && Hcef.enabled){
@@ -210,52 +204,31 @@ class MainScreen extends React.Component {
             internalPath = 'file://' + internalPath;
         }
 
-        let remain = 5;
-
-        let nowDate = new Date();
-        let key = nowDate.getFullYear() + '-' + nowDate.getMonth() + '-' + nowDate.getDate();
-
-        if(index === null || this.state.cards[index].sid !== sid){
-            if(this.state.history[key] === undefined){
-                this.state.history[key] = 1;
-            }
-            else if(this.state.history[key] < 5){
-                this.state.history[key] += 1;
-            }
-            else{
-                Alert.alert("", "오늘 생성할 수 있는 카드번호를 모두 생성했습니다. 나중에 다시 시도해주세요.",
-                    [{text: '확인', onPress: () => {navigation.goBack();}}]);
-                return ;
-            }
-        }
-
-        remain = 5 - this.state.history[key] ;
-
         if(index === null){
             this.setState({cards: update(this.state.cards, { $push: [{name: name, sid: sid, uid: uid, image: internalPath}]})},
                 async () => {
                     await AsyncStorage.setItem('cards', JSON.stringify(this.state.cards));
-                    await AsyncStorage.setItem('history', JSON.stringify(this.state.history));
                 });
         }
         else{
             this.setState({cards: update(this.state.cards, { [index]: { name: {$set: name}, sid: {$set: sid}, uid: {$set: uid}, image: {$set: internalPath} }})},
                 async () =>{
                     await AsyncStorage.setItem('cards', JSON.stringify(this.state.cards));
-                    await AsyncStorage.setItem('history', JSON.stringify(this.state.history));
                 });
         }
 
-        Alert.alert("", "카드를 저장했습니다. 오늘 앞으로 " + remain + "개의 카드를 추가하거나, 번호를 변경할 수 있습니다.",
-            [{text: '확인', onPress: () => {navigation.goBack();}}]);
+        Alert.alert("", i18n.t('alert_save_content'),
+            [{text: i18n.t('alert_save_yes'), onPress: () => {navigation.goBack();}}]);
     }
 
     cardListDelete(index){
-        Alert.alert('','카드를 삭제하시겠습니까?'
+        Alert.alert(i18n.t('alert_delete_title'),i18n.t('alert_delete_content')
             , [
-            {text: '아니오'},
-            {text: '예', onPress: () => {
-                    RNFS.unlink(this.state.cards[index].image);
+            {text: i18n.t('alert_delete_no')},
+            {text: i18n.t('alert_delete_yes'), onPress: () => {
+                    if(this.state.cards[index].image !== '' ){
+                        RNFS.unlink(this.state.cards[index].image);
+                    }
                     this.setState({
                     cards: update(this.state.cards, {
                         $splice: [[index, 1]]
@@ -303,7 +276,7 @@ class MainScreen extends React.Component {
                             fontWeight: 'bold',
                             textAlignVertical: 'center',
                         }}>
-                            홈
+                            {i18n.t('header_home')}
                         </Text>
 
                         <TouchableOpacity style={{
@@ -326,7 +299,7 @@ class MainScreen extends React.Component {
                 </ScrollView>
                 ) : (
                     <View style={{flex:1, justifyContent: 'center', alignItems:'center'}}>
-                        <Text style={{fontSize: 17, color: '#9E9E9E', }}>{'우측 상단의 +를 눌러 카드를 추가해주세요'}</Text>
+                        <Text style={{fontSize: 17, color: '#9E9E9E', }}>{i18n.t('main_empty_string')}</Text>
                     </View>
                 )
                 }

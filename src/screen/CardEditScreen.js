@@ -19,6 +19,7 @@ import update from 'react-addons-update';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import CardConv from '../module/CardConv';
+import i18n from 'i18n-js';
 
 class CardPreview extends React.Component {
     render() {
@@ -37,7 +38,7 @@ class CardPreview extends React.Component {
                                 }
                             </Text>
                             <Text style={{paddingTop: 8, textAlign: 'center', alignSelf: 'center', fontSize: 24, color:'#FAFAFA', fontWeight: '500', letterSpacing:-0.5}}>
-                                {'터치하여 활성화'}
+                                {i18n.t('card_touch_to_enable')}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -49,7 +50,7 @@ class CardPreview extends React.Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <Text style={{fontSize: 14, color:'#FAFAFA'}}>편집</Text>
+                        <Text style={{fontSize: 14, color:'#FAFAFA'}}>{i18n.t('card_edit')}</Text>
                     </TouchableOpacity>
                     <View style={{width: 1, backgroundColor: '#FAFAFA'}}/>
                     <TouchableOpacity style={{
@@ -57,7 +58,7 @@ class CardPreview extends React.Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <Text style={{fontSize: 14, color:'#ffffff'}}>삭제</Text>
+                        <Text style={{fontSize: 14, color:'#ffffff'}}>{i18n.t('card_delete')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -292,7 +293,7 @@ class CardEditScreen extends React.Component {
                                 fontWeight: 'bold',
                                 textAlignVertical: 'center',
                             }}>
-                                {this.state.mode === 'add' ? '카드 추가' : '카드 편집'}
+                                {this.state.mode === 'add' ? i18n.t('header_add') : i18n.t('header_edit')}
                             </Text>
 
                             <TouchableOpacity style={{
@@ -309,9 +310,9 @@ class CardEditScreen extends React.Component {
                         </View>
                     </View>
                     <ScrollView style={{flex: 1, paddingHorizontal: 24, paddingTop: 16,}}>
-                        <ETextInput title={'카드 이름'} value={this.state.name} onChangeText={text => this.setState({name: text})} ref={ref => this.nameInput = ref}/>
+                        <ETextInput title={i18n.t('edit_name')} value={this.state.name} onChangeText={text => this.setState({name: text})} ref={ref => this.nameInput = ref}/>
                         <TouchableOpacity onPress={() => this.selectPhoto()}>
-                            <ETextInput style={{marginTop: 24,}} title={'카드 배경'} value={this.state.image ? '사진이 선택되었습니다.' : '여기를 눌러 사진을 선택할 수 있습니다.'} editable={false}/>
+                            <ETextInput style={{marginTop: 24,}} title={i18n.t('edit_background')} value={this.state.image ? i18n.t('edit_background_selected') :  i18n.t('edit_background_empty')} editable={false}/>
                         </TouchableOpacity>
 
                         <View style={{marginTop: 24, flexDirection: 'row'}}>
@@ -366,15 +367,15 @@ class CardEditScreen extends React.Component {
                             />
                         </View>
                         <Text style={{marginTop: 8, fontSize: 14, letterSpacing: -0.4, color: this.state.sidError ? '#F44336' : '#9E9E9E'}}>
-                            {'SID는 16진수 16자리 입니다. 카드 번호가 아님에 유의하세요!'}
+                            {i18n.t('edit_sid_notice')}
                         </Text>
                         <TouchableOpacity style={{marginTop: 24, height: 48, backgroundColor: '#03A9F4', borderRadius:8, alignItems:'center', justifyContent:'center',}}
                             onPress={() => this.setRandomSid()}
                         >
-                            <Text style={{fontSize: 17, color: '#ffffff', fontWeight: '500'}}>랜덤 생성</Text>
+                            <Text style={{fontSize: 17, color: '#ffffff', fontWeight: '500'}}>{i18n.t('edit_random')}</Text>
                         </TouchableOpacity>
 
-                        <Text style={{fontSize: 14, color: '#9E9E9E', marginTop: 20, fontWeight: 'bold'}}>미리보기</Text>
+                        <Text style={{fontSize: 14, color: '#9E9E9E', marginTop: 20, fontWeight: 'bold'}}>{i18n.t('edit_preview')}</Text>
                         <CardPreview name={this.state.name} uid={this.state.uid} image={this.state.image} cardHeight={this.state.cardHeight ?? 0}/>
 
                         <View style={{height: 50}}/>
