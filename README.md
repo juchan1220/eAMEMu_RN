@@ -24,6 +24,7 @@ HCE-F를 이용한 안드로이드 전용 e-AMUSEMENT PASS 에뮬레이션 앱 (
 
 * XPERIA XZ2 Compact, Android 9
 * Mi Note 3, Android 9
+* Galaxy S20+ BTS, SKT향 Android 10
 
 ### Special Thanks for 
 * [@dogelition_man](https://github.com/ledoge) (provide source that convert sid to card number)
