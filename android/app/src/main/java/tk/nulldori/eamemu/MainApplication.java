@@ -28,7 +28,6 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
             packages.add(new HcefPackage());
             packages.add(new CardConvPackage());
-            packages.add(new RNFSPackage());
           return packages;
         }
 
