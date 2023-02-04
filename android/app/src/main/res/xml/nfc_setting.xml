@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <host-nfcf-service xmlns:android="http://schemas.android.com/apk/res/android">
     <system-code-filter android:name="4000" />
-    <nfcid2-filter android:name="null" />
+    <nfcid2-filter android:name="random" />
 </host-nfcf-service>

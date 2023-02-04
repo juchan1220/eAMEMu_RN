@@ -35,6 +35,7 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
     ComponentName componentName = null;
     Boolean isHceFEnabled = false;
     Boolean isHceFSupport = false;
+    Boolean nowUsing = false;
 
     HcefModule(ReactApplicationContext context) {
         super(context);
@@ -87,8 +88,13 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
         if(sid.substring(0,4).contentEquals("02FE") == false)
             promise.reject("PREFIX_ERROR", "SID must be start with 02FE");
 
+        boolean result = nfcFCardEmulation.setNfcid2ForService(componentName, sid);
 
-        promise.resolve(nfcFCardEmulation.setNfcid2ForService(componentName, sid));
+        if (result) {
+            promise.resolve(true);
+        } else {
+            promise.reject("FAIL", "setNfcid2ForService returned false");
+        }
     }
 
     @ReactMethod
@@ -106,30 +112,44 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
         if(cardId.substring(0,4).contentEquals("02FE") == false)
             promise.reject("PREFIX_ERROR", "SID must be start with 02FE");
 
-        // Toast.makeText(getReactApplicationContext(), "Card Emulation Enabled!", Toast.LENGTH_SHORT).show();
-        promise.resolve(nfcFCardEmulation.enableService(getCurrentActivity(), componentName));
+        boolean result = nfcFCardEmulation.enableService(getCurrentActivity(), componentName);
+
+        if (result) {
+            nowUsing = true;
+            promise.resolve(true);
+        } else {
+            promise.reject("FAIL", "enableService returned false");
+        }
     }
 
     @ReactMethod
     void disableService(Promise promise){
-        if(nfcFCardEmulation == null || componentName == null){
+        if(nfcFCardEmulation == null || componentName == null) {
             promise.reject("NULL_ERROR", "nfcFCardEmulation or componentName is null");
         }
-        // Toast.makeText(getReactApplicationContext(), "Card Emulation Disabled...", Toast.LENGTH_SHORT).show();
-        promise.resolve(nfcFCardEmulation.disableService(getCurrentActivity()));
+
+        boolean result = nfcFCardEmulation.disableService(getCurrentActivity());
+
+        if (result) {
+            nowUsing = false;
+            promise.resolve(true);
+        } else {
+            promise.reject("FAIL", "disableService returned false");
+        }
     }
 
     @Override
-    public void onHostResume(){
-        if(nfcFCardEmulation != null && componentName != null){
+    public void onHostResume() {
+        if (nfcFCardEmulation != null && componentName != null && nowUsing) {
             Log.d("MainActivity onResume()", "enabled!");
             nfcFCardEmulation.enableService(getCurrentActivity(), componentName);
         }
     }
 
+
     @Override
     public void onHostPause(){
-        if(nfcFCardEmulation != null && componentName != null){
+        if(nfcFCardEmulation != null && componentName != null && nowUsing){
             Log.d("MainActivity onPause()", "disabled...");
             nfcFCardEmulation.disableService(getCurrentActivity());
         }
@@ -137,6 +157,5 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
 
     @Override
     public void onHostDestroy(){
-
     }
 }
