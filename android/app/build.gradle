@@ -167,6 +167,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // for react-native-fs
+    implementation project(':react-native-fs')
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
