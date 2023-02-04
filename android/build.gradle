@@ -17,5 +17,8 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
+
+        // for react-native-fs
+        implementation project(':react-native-fs')
     }
 }
