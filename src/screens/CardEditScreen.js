@@ -18,16 +18,20 @@ import {
 import update from 'react-addons-update';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-crop-picker';
-import CardConv from '../module/CardConv';
+import CardConv from '../modules/CardConv';
 import i18n from 'i18n-js';
 
 class CardPreview extends React.Component {
   render() {
     let cardContent = (
       <View
-        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 8}}>
-        <View style={{flex: 1}}>
-          <TouchableOpacity style={{flex: 1}}>
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.3)',
+          borderRadius: 8,
+        }}>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity style={{ flex: 1 }}>
             <Text
               style={{
                 position: 'absolute',
@@ -39,7 +43,7 @@ class CardPreview extends React.Component {
               }}>
               {this.props.name}
             </Text>
-            <View style={{flex: 1, justifyContent: 'center', paddingTop: 20}}>
+            <View style={{ flex: 1, justifyContent: 'center', paddingTop: 20 }}>
               <Text
                 style={{
                   paddingTop: 0,
@@ -73,26 +77,26 @@ class CardPreview extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
-        <View style={{height: 1, backgroundColor: '#FAFAFA'}} />
-        <View style={{height: 48, flexDirection: 'row'}}>
+        <View style={{ height: 1, backgroundColor: '#FAFAFA' }} />
+        <View style={{ height: 48, flexDirection: 'row' }}>
           <TouchableOpacity
             style={{
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{fontSize: 14, color: '#FAFAFA'}}>
+            <Text style={{ fontSize: 14, color: '#FAFAFA' }}>
               {i18n.t('card_edit')}
             </Text>
           </TouchableOpacity>
-          <View style={{width: 1, backgroundColor: '#FAFAFA'}} />
+          <View style={{ width: 1, backgroundColor: '#FAFAFA' }} />
           <TouchableOpacity
             style={{
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{fontSize: 14, color: '#ffffff'}}>
+            <Text style={{ fontSize: 14, color: '#ffffff' }}>
               {i18n.t('card_delete')}
             </Text>
           </TouchableOpacity>
@@ -111,7 +115,7 @@ class CardPreview extends React.Component {
         ]}>
         {this.props.image ? (
           <ImageBackground
-            source={{uri: this.props.image}}
+            source={{ uri: this.props.image }}
             style={{
               flex: 1,
               resizeMode: 'contain',
@@ -144,14 +148,14 @@ class ETextInput extends React.Component {
   };
 
   onFocusCallback() {
-    this.setState({focused: true});
+    this.setState({ focused: true });
     if (typeof this.props.onFocus === 'function') {
       this.props.onFocus();
     }
   }
 
   onBlurCallback() {
-    this.setState({focused: false});
+    this.setState({ focused: false });
     if (typeof this.props.onBlur === 'function') {
       this.props.onBlur();
     }
@@ -190,7 +194,7 @@ class ETextInput extends React.Component {
         </Text>
 
         <TextInput
-          style={[{fontSize: 17, paddingTop: 4}, this.props.textStyle]}
+          style={[{ fontSize: 17, paddingTop: 4 }, this.props.textStyle]}
           value={this.props.value}
           onFocus={() => this.onFocusCallback()}
           onBlur={() => this.onBlurCallback()}
@@ -237,7 +241,7 @@ class CardEditScreen extends React.Component {
   };
 
   componentDidMount(): void {
-    let {height, width} = Dimensions.get('window');
+    let { height, width } = Dimensions.get('window');
 
     function randomHex4Byte() {
       let hexString = Math.min(
@@ -297,7 +301,7 @@ class CardEditScreen extends React.Component {
   async updateSID() {
     if (this.makeSid() !== '') {
       let uid = await CardConv.convertSID(this.makeSid());
-      this.setState({uid: uid});
+      this.setState({ uid: uid });
     }
   }
 
@@ -305,7 +309,7 @@ class CardEditScreen extends React.Component {
     let sid = this.makeSid();
 
     if (sid === '') {
-      this.setState({sidError: true});
+      this.setState({ sidError: true });
       return;
     }
 
@@ -335,7 +339,11 @@ class CardEditScreen extends React.Component {
     }
 
     this.setState(
-      {sid2: randomHex4Byte(), sid3: randomHex4Byte(), sid4: randomHex4Byte()},
+      {
+        sid2: randomHex4Byte(),
+        sid3: randomHex4Byte(),
+        sid4: randomHex4Byte(),
+      },
       () => this.updateSID(),
     );
   }
@@ -348,20 +356,20 @@ class CardEditScreen extends React.Component {
       mediaType: 'photo',
     }).then(res => {
       if (res && res.path) {
-        this.setState({image: res.path});
+        this.setState({ image: res.path });
       }
     });
   }
 
   render() {
     return (
-      <SafeAreaView style={{flex: 1, paddingTop: StatusBar.currentHeight}}>
+      <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
         <StatusBar
           barStyle="dark-content"
           translucent={true}
           backgroundColor={'#ffffff'}
         />
-        <KeyboardAvoidingView style={{flex: 1}}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
           <View
             style={{
               height: 48,
@@ -371,7 +379,11 @@ class CardEditScreen extends React.Component {
               backgroundColor: '#ffffff',
             }}>
             <View
-              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               <Text
                 style={{
                   fontSize: 17,
@@ -397,16 +409,17 @@ class CardEditScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          <ScrollView style={{flex: 1, paddingHorizontal: 24, paddingTop: 16}}>
+          <ScrollView
+            style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
             <ETextInput
               title={i18n.t('edit_name')}
               value={this.state.name}
-              onChangeText={text => this.setState({name: text})}
+              onChangeText={text => this.setState({ name: text })}
               ref={ref => (this.nameInput = ref)}
             />
             <TouchableOpacity onPress={() => this.selectPhoto()}>
               <ETextInput
-                style={{marginTop: 24}}
+                style={{ marginTop: 24 }}
                 title={i18n.t('edit_background')}
                 value={
                   this.state.image
@@ -417,18 +430,18 @@ class CardEditScreen extends React.Component {
               />
             </TouchableOpacity>
 
-            <View style={{marginTop: 24, flexDirection: 'row'}}>
+            <View style={{ marginTop: 24, flexDirection: 'row' }}>
               <ETextInput
                 title={'SID'}
                 value={'02FE'}
-                onChangeText={text => this.setState({sid: text})}
-                style={{flex: 1}}
+                onChangeText={text => this.setState({ sid: text })}
+                style={{ flex: 1 }}
                 editable={false}
                 error={this.state.sidError}
-                textStyle={{textAlign: 'center'}}
+                textStyle={{ textAlign: 'center' }}
                 titleStyle={
                   this.state.sidError !== true &&
-                  this.state.sidFocus && {color: '#03A9F4'}
+                  this.state.sidFocus && { color: '#03A9F4' }
                 }
               />
               <Text
@@ -443,19 +456,19 @@ class CardEditScreen extends React.Component {
                 -
               </Text>
               <ETextInput
-                textStyle={{textAlign: 'center'}}
+                textStyle={{ textAlign: 'center' }}
                 value={this.state.sid2}
                 onChangeText={text => {
-                  this.setState({sid2: text}, () => this.updateSID());
+                  this.setState({ sid2: text }, () => this.updateSID());
                   if (text.length === 4) {
                     this.sid3Input.focus();
                   }
                 }}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
                 maxLength={4}
                 error={this.state.sidError}
-                onFocus={() => this.setState({sidFocus: true})}
-                onBlur={() => this.setState({sidFocus: false})}
+                onFocus={() => this.setState({ sidFocus: true })}
+                onBlur={() => this.setState({ sidFocus: false })}
                 autoCapitalize={'characters'}
                 ref={ref => (this.sid2Input = ref)}
                 editable={false}
@@ -472,19 +485,19 @@ class CardEditScreen extends React.Component {
                 -
               </Text>
               <ETextInput
-                textStyle={{textAlign: 'center'}}
+                textStyle={{ textAlign: 'center' }}
                 value={this.state.sid3}
                 onChangeText={text => {
-                  this.setState({sid3: text}, () => this.updateSID());
+                  this.setState({ sid3: text }, () => this.updateSID());
                   if (text.length === 4) {
                     this.sid4Input.focus();
                   }
                 }}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
                 maxLength={4}
                 error={this.state.sidError}
-                onFocus={() => this.setState({sidFocus: true})}
-                onBlur={() => this.setState({sidFocus: false})}
+                onFocus={() => this.setState({ sidFocus: true })}
+                onBlur={() => this.setState({ sidFocus: false })}
                 autoCapitalize={'characters'}
                 ref={ref => (this.sid3Input = ref)}
                 editable={false}
@@ -501,17 +514,17 @@ class CardEditScreen extends React.Component {
                 -
               </Text>
               <ETextInput
-                textStyle={{textAlign: 'center'}}
+                textStyle={{ textAlign: 'center' }}
                 value={this.state.sid4}
                 onChangeText={text => {
-                  this.setState({sid4: text}, () => this.updateSID());
+                  this.setState({ sid4: text }, () => this.updateSID());
                   this.updateSID();
                 }}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
                 error={this.state.sidError}
                 maxLength={4}
-                onFocus={() => this.setState({sidFocus: true})}
-                onBlur={() => this.setState({sidFocus: false})}
+                onFocus={() => this.setState({ sidFocus: true })}
+                onBlur={() => this.setState({ sidFocus: false })}
                 autoCapitalize={'characters'}
                 ref={ref => (this.sid4Input = ref)}
                 editable={false}
@@ -536,7 +549,8 @@ class CardEditScreen extends React.Component {
                 justifyContent: 'center',
               }}
               onPress={() => this.setRandomSid()}>
-              <Text style={{fontSize: 17, color: '#ffffff', fontWeight: '500'}}>
+              <Text
+                style={{ fontSize: 17, color: '#ffffff', fontWeight: '500' }}>
                 {i18n.t('edit_random')}
               </Text>
             </TouchableOpacity>
@@ -557,7 +571,7 @@ class CardEditScreen extends React.Component {
               cardHeight={this.state.cardHeight ?? 0}
             />
 
-            <View style={{height: 50}} />
+            <View style={{ height: 50 }} />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>

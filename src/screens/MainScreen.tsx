@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StatusBar,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   Dimensions,
@@ -12,155 +11,22 @@ import {
   Alert,
   StyleSheet,
   Image,
+  FlatList,
 } from 'react-native';
 import update from 'react-addons-update';
-import Hcef from '../module/Hcef';
-import CardConv from '../module/CardConv';
+import Hcef from '../modules/Hcef';
+import CardConv from '../modules/CardConv';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import i18n from 'i18n-js';
+
+import CardView from '../components/Card';
+import { Card } from '../types';
 
 const RNFS = require('react-native-fs');
 
-class Card extends React.Component {
-  async onPress() {
-    this.props.onPress(this.props.card, this.props.index);
-  }
-
-  async disable() {
-    if (typeof this.props.disableCallback === 'function') {
-      this.props.disableCallback(this.props.card, this.props.index);
-    }
-  }
-
-  render() {
-    let cardContent = (
-      <View
-        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 8}}>
-        <View style={{flex: 1}}>
-          <TouchableOpacity style={{flex: 1}} onPress={this.onPress.bind(this)}>
-            <Text
-              style={{
-                position: 'absolute',
-                top: 20,
-                left: 20,
-                fontSize: 17,
-                fontWeight: 'bold',
-                color: '#ffffff',
-              }}>
-              {this.props.card.name}
-            </Text>
-
-            <View style={{flex: 1, justifyContent: 'center', paddingTop: 20}}>
-              <Text
-                style={{
-                  paddingTop: 0,
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  color: '#E0E0E0',
-                  fontSize: 14,
-                }}>
-                {this.props.card.uid.substr(0, 4) +
-                  '-' +
-                  this.props.card.uid.substr(4, 4) +
-                  '-' +
-                  this.props.card.uid.substr(8, 4) +
-                  '-' +
-                  this.props.card.uid.substr(12, 4)}
-              </Text>
-              <Text
-                style={{
-                  paddingTop: 8,
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  fontSize: 24,
-                  color: '#FAFAFA',
-                  fontWeight: '500',
-                  letterSpacing: -0.5,
-                }}>
-                {this.props.card.enabled
-                  ? i18n.t('card_touch_to_disable')
-                  : i18n.t('card_touch_to_enable')}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={{height: 1, backgroundColor: '#FAFAFA'}} />
-        <View style={{height: 48, flexDirection: 'row'}}>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={() =>
-              this.props.navigation.navigate('CardEditScreen', {
-                name: this.props.card.name,
-                sid: this.props.card.sid,
-                image: this.props.card.image,
-                index: this.props.index,
-                update: this.props.update,
-              })
-            }>
-            <Text style={{fontSize: 14, color: '#FAFAFA'}}>
-              {i18n.t('card_edit')}
-            </Text>
-          </TouchableOpacity>
-          <View style={{width: 1, backgroundColor: '#FAFAFA'}} />
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={() => this.props.delete(this.props.index)}>
-            <Text style={{fontSize: 14, color: '#ffffff'}}>
-              {i18n.t('card_delete')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-
-    return (
-      <View
-        style={[
-          {
-            borderRadius: 8,
-            height: this.props.cardHeight,
-            marginTop: 24,
-            marginHorizontal: 24,
-            justifyContent: 'center',
-          },
-        ]}>
-        {this.props.card.image ? (
-          <ImageBackground
-            source={{uri: this.props.card.image}}
-            style={{
-              flex: 1,
-              resizeMode: 'contain',
-            }}
-            blurRadius={2}
-            borderRadius={8}>
-            {cardContent}
-          </ImageBackground>
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              resizeMode: 'contain',
-              backgroundColor: '#03A9F4',
-            }}
-            blurRadius={2}
-            borderRadius={8}>
-            {cardContent}
-          </View>
-        )}
-      </View>
-    );
-  }
-}
-
+/*
 class MainScreen extends React.Component {
   state = {
     cards: [],
@@ -170,7 +36,7 @@ class MainScreen extends React.Component {
 
   async loadCards() {
     let cardsJson = await AsyncStorage.getItem('cards');
-    this.setState({cards: cardsJson ? JSON.parse(cardsJson) : []});
+    this.setState({ cards: cardsJson ? JSON.parse(cardsJson) : [] });
   }
 
   componentDidMount() {
@@ -182,11 +48,11 @@ class MainScreen extends React.Component {
       Alert.alert(
         i18n.t('alert_not_support_title'),
         i18n.t('alert_not_support_content'),
-        [{text: i18n.t('alert_not_support_yes')}],
+        [{ text: i18n.t('alert_not_support_yes') }],
       );
     } else if (Hcef.enabled !== true) {
       Alert.alert(i18n.t('alert_nfc_title'), i18n.t('alert_nfc_content'), [
-        {text: i18n.t('alert_nfc_yes')},
+        { text: i18n.t('alert_nfc_yes') },
       ]);
     }
 
@@ -194,7 +60,7 @@ class MainScreen extends React.Component {
       Hcef.disableService(); // 카드를 활성화하지 않았는데도 카드가 에뮬되는 이슈 방지
     }
 
-    let {height, width} = Dimensions.get('window');
+    let { height, width } = Dimensions.get('window');
 
     this.setState({
       cardHeight: ((width - 48) * 53.98) / 85.6,
@@ -231,7 +97,9 @@ class MainScreen extends React.Component {
       this.prevCard.enabled = true;
       this.prevIndex = index;
       this.setState({
-        cards: update(this.state.cards, {[index]: {enabled: {$set: true}}}),
+        cards: update(this.state.cards, {
+          [index]: { enabled: { $set: true } },
+        }),
       });
     }
   }
@@ -242,7 +110,9 @@ class MainScreen extends React.Component {
       if (ret) {
         card.enabled = false;
         this.setState({
-          cards: update(this.state.cards, {[index]: {enabled: {$set: false}}}),
+          cards: update(this.state.cards, {
+            [index]: { enabled: { $set: false } },
+          }),
         });
         return true;
       }
@@ -270,7 +140,7 @@ class MainScreen extends React.Component {
       this.setState(
         {
           cards: update(this.state.cards, {
-            $push: [{name: name, sid: sid, uid: uid, image: internalPath}],
+            $push: [{ name: name, sid: sid, uid: uid, image: internalPath }],
           }),
         },
         async () => {
@@ -282,10 +152,10 @@ class MainScreen extends React.Component {
         {
           cards: update(this.state.cards, {
             [index]: {
-              name: {$set: name},
-              sid: {$set: sid},
-              uid: {$set: uid},
-              image: {$set: internalPath},
+              name: { $set: name },
+              sid: { $set: sid },
+              uid: { $set: uid },
+              image: { $set: internalPath },
             },
           }),
         },
@@ -307,7 +177,7 @@ class MainScreen extends React.Component {
 
   cardListDelete(index) {
     Alert.alert(i18n.t('alert_delete_title'), i18n.t('alert_delete_content'), [
-      {text: i18n.t('alert_delete_no')},
+      { text: i18n.t('alert_delete_no') },
       {
         text: i18n.t('alert_delete_yes'),
         onPress: () => {
@@ -353,7 +223,7 @@ class MainScreen extends React.Component {
     });
 
     return (
-      <SafeAreaView style={{flex: 1, paddingTop: StatusBar.currentHeight}}>
+      <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
         <StatusBar
           barStyle="dark-content"
           translucent={true}
@@ -368,7 +238,7 @@ class MainScreen extends React.Component {
             backgroundColor: '#ffffff',
           }}>
           <View
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text
               style={{
                 fontSize: 17,
@@ -399,11 +269,11 @@ class MainScreen extends React.Component {
         </View>
 
         {this.state.cards && this.state.cards.length > 0 ? (
-          <ScrollView style={{flex: 1}}>{cardWidget}</ScrollView>
+          <ScrollView style={{ flex: 1 }}>{cardWidget}</ScrollView>
         ) : (
           <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 17, color: '#9E9E9E'}}>
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 17, color: '#9E9E9E' }}>
               {i18n.t('main_empty_string')}
             </Text>
           </View>
@@ -412,5 +282,51 @@ class MainScreen extends React.Component {
     );
   }
 }
+*/
+
+const ListSeparator = () => <View style={styles.separator} />;
+
+const MainScreen = () => {
+  const [cards, setCards] = useState<Card[]>([
+    {
+      sid: '02FE000000000000',
+      name: 'e-amusement pass',
+    },
+  ]);
+
+  return (
+    <View style={styles.container}>
+      <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
+
+      {cards.length > 0 ? (
+        <FlatList
+          style={styles.list}
+          data={cards}
+          renderItem={card => <CardView card={card.item} />}
+          ItemSeparatorComponent={ListSeparator}
+          ListHeaderComponent={View}
+          ListHeaderComponentStyle={styles.separator}
+          ListFooterComponent={View}
+          ListFooterComponentStyle={styles.separator}
+        />
+      ) : (
+        <View />
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  list: {
+    // paddingHorizontal: 16,
+  },
+  separator: {
+    height: 16,
+  },
+});
 
 export default MainScreen;
