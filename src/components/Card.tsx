@@ -23,7 +23,8 @@ const CardView = (props: CardViewProps) => {
       containerStyle={styles.shadowContainer}
       style={styles.shadowChildContainerStyle}
       distance={4}
-      offset={[0, 2]}>
+      offset={[0, 2]}
+    >
       <View style={styles.background}>
         <Text>Card 1</Text>
       </View>

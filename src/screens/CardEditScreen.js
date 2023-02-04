@@ -29,7 +29,8 @@ class CardPreview extends React.Component {
           flex: 1,
           backgroundColor: 'rgba(0,0,0,0.3)',
           borderRadius: 8,
-        }}>
+        }}
+      >
         <View style={{ flex: 1 }}>
           <TouchableOpacity style={{ flex: 1 }}>
             <Text
@@ -40,7 +41,8 @@ class CardPreview extends React.Component {
                 fontSize: 17,
                 fontWeight: 'bold',
                 color: '#ffffff',
-              }}>
+              }}
+            >
               {this.props.name}
             </Text>
             <View style={{ flex: 1, justifyContent: 'center', paddingTop: 20 }}>
@@ -51,7 +53,8 @@ class CardPreview extends React.Component {
                   alignSelf: 'center',
                   color: '#E0E0E0',
                   fontSize: 14,
-                }}>
+                }}
+              >
                 {this.props.uid
                   ? this.props.uid.substr(0, 4) +
                     '-' +
@@ -71,7 +74,8 @@ class CardPreview extends React.Component {
                   color: '#FAFAFA',
                   fontWeight: '500',
                   letterSpacing: -0.5,
-                }}>
+                }}
+              >
                 {i18n.t('card_touch_to_enable')}
               </Text>
             </View>
@@ -84,7 +88,8 @@ class CardPreview extends React.Component {
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
+            }}
+          >
             <Text style={{ fontSize: 14, color: '#FAFAFA' }}>
               {i18n.t('card_edit')}
             </Text>
@@ -95,7 +100,8 @@ class CardPreview extends React.Component {
               flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
+            }}
+          >
             <Text style={{ fontSize: 14, color: '#ffffff' }}>
               {i18n.t('card_delete')}
             </Text>
@@ -112,7 +118,8 @@ class CardPreview extends React.Component {
             marginTop: 16,
             justifyContent: 'center',
           },
-        ]}>
+        ]}
+      >
         {this.props.image ? (
           <ImageBackground
             source={{ uri: this.props.image }}
@@ -121,7 +128,8 @@ class CardPreview extends React.Component {
               resizeMode: 'contain',
             }}
             blurRadius={2}
-            borderRadius={8}>
+            borderRadius={8}
+          >
             {cardContent}
           </ImageBackground>
         ) : (
@@ -132,7 +140,8 @@ class CardPreview extends React.Component {
               backgroundColor: '#03A9F4',
             }}
             blurRadius={2}
-            borderRadius={8}>
+            borderRadius={8}
+          >
             {cardContent}
           </View>
         )}
@@ -189,7 +198,8 @@ class ETextInput extends React.Component {
               fontWeight: 'bold',
             },
             this.props.titleStyle,
-          ]}>
+          ]}
+        >
           {this.props.title}
         </Text>
 
@@ -377,19 +387,22 @@ class CardEditScreen extends React.Component {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: '#ffffff',
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontSize: 17,
                   fontWeight: 'bold',
                   textAlignVertical: 'center',
-                }}>
+                }}
+              >
                 {this.state.mode === 'add'
                   ? i18n.t('header_add')
                   : i18n.t('header_edit')}
@@ -404,13 +417,15 @@ class CardEditScreen extends React.Component {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                onPress={() => this.saveCard()}>
+                onPress={() => this.saveCard()}
+              >
                 <Icon name="save" size={26} color={'rgba(0,0,0,0.7)'} />
               </TouchableOpacity>
             </View>
           </View>
           <ScrollView
-            style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
+            style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}
+          >
             <ETextInput
               title={i18n.t('edit_name')}
               value={this.state.name}
@@ -452,7 +467,8 @@ class CardEditScreen extends React.Component {
                   textAlign: 'center',
                   color: '#9E9E9E',
                   fontSize: 14,
-                }}>
+                }}
+              >
                 -
               </Text>
               <ETextInput
@@ -481,7 +497,8 @@ class CardEditScreen extends React.Component {
                   textAlign: 'center',
                   color: '#9E9E9E',
                   fontSize: 14,
-                }}>
+                }}
+              >
                 -
               </Text>
               <ETextInput
@@ -510,7 +527,8 @@ class CardEditScreen extends React.Component {
                   textAlign: 'center',
                   color: '#9E9E9E',
                   fontSize: 14,
-                }}>
+                }}
+              >
                 -
               </Text>
               <ETextInput
@@ -536,7 +554,8 @@ class CardEditScreen extends React.Component {
                 fontSize: 14,
                 letterSpacing: -0.4,
                 color: this.state.sidError ? '#F44336' : '#9E9E9E',
-              }}>
+              }}
+            >
               {i18n.t('edit_sid_notice')}
             </Text>
             <TouchableOpacity
@@ -548,9 +567,11 @@ class CardEditScreen extends React.Component {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              onPress={() => this.setRandomSid()}>
+              onPress={() => this.setRandomSid()}
+            >
               <Text
-                style={{ fontSize: 17, color: '#ffffff', fontWeight: '500' }}>
+                style={{ fontSize: 17, color: '#ffffff', fontWeight: '500' }}
+              >
                 {i18n.t('edit_random')}
               </Text>
             </TouchableOpacity>
@@ -561,7 +582,8 @@ class CardEditScreen extends React.Component {
                 color: '#9E9E9E',
                 marginTop: 20,
                 fontWeight: 'bold',
-              }}>
+              }}
+            >
               {i18n.t('edit_preview')}
             </Text>
             <CardPreview
