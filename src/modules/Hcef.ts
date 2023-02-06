@@ -6,8 +6,7 @@ interface HcefModule {
   support: boolean;
   enabled: boolean;
 
-  setSID: (sid: string) => Promise<true>;
-  enableService: () => Promise<true>;
+  enableService: (sid: string) => Promise<true>;
   disableService: () => Promise<true>;
 }
 

@@ -1,316 +1,193 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StatusBar,
-  ScrollView,
   TouchableOpacity,
-  Dimensions,
-  ImageBackground,
-  findNodeHandle,
   Alert,
   StyleSheet,
-  Image,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
-import update from 'react-addons-update';
-import Hcef from '../modules/Hcef';
-import CardConv from '../modules/CardConv';
-import AsyncStorage from '@react-native-community/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import i18n from 'i18n-js';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { Shadow } from 'react-native-shadow-2';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 
+import Hcef from '../modules/Hcef';
 import CardView from '../components/Card';
 import { Card } from '../types';
-
-const RNFS = require('react-native-fs');
-
-/*
-class MainScreen extends React.Component {
-  state = {
-    cards: [],
-    cardHeight: 1,
-    support: false,
-  };
-
-  async loadCards() {
-    let cardsJson = await AsyncStorage.getItem('cards');
-    this.setState({ cards: cardsJson ? JSON.parse(cardsJson) : [] });
-  }
-
-  componentDidMount() {
-    this.prevCard = null;
-    this.prevIndex = -1;
-    this.loadCards();
-
-    if (Hcef.support !== true) {
-      Alert.alert(
-        i18n.t('alert_not_support_title'),
-        i18n.t('alert_not_support_content'),
-        [{ text: i18n.t('alert_not_support_yes') }],
-      );
-    } else if (Hcef.enabled !== true) {
-      Alert.alert(i18n.t('alert_nfc_title'), i18n.t('alert_nfc_content'), [
-        { text: i18n.t('alert_nfc_yes') },
-      ]);
-    }
-
-    if (Hcef.support && Hcef.enabled) {
-      Hcef.disableService(); // 카드를 활성화하지 않았는데도 카드가 에뮬되는 이슈 방지
-    }
-
-    let { height, width } = Dimensions.get('window');
-
-    this.setState({
-      cardHeight: ((width - 48) * 53.98) / 85.6,
-    });
-  }
-
-  async switch(card, index) {
-    if (!Hcef.support || !Hcef.enabled) {
-      return;
-    }
-
-    if (card.enabled === true) {
-      this.disable(card, index);
-    } else {
-      this.enable(card, index);
-    }
-  }
-
-  async enable(card, index) {
-    if (this.prevCard && this.prevCard.enabled) {
-      await this.disable(this.prevCard, this.prevIndex);
-    }
-
-    let ret = false;
-    let ret2 = false;
-
-    ret = await Hcef.setSID(card.sid);
-    if (ret) {
-      ret2 = await Hcef.enableService();
-    }
-
-    if (ret && ret2) {
-      this.prevCard = card;
-      this.prevCard.enabled = true;
-      this.prevIndex = index;
-      this.setState({
-        cards: update(this.state.cards, {
-          [index]: { enabled: { $set: true } },
-        }),
-      });
-    }
-  }
-
-  async disable(card, index) {
-    if (card.enabled) {
-      let ret = await Hcef.disableService();
-      if (ret) {
-        card.enabled = false;
-        this.setState({
-          cards: update(this.state.cards, {
-            [index]: { enabled: { $set: false } },
-          }),
-        });
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async cardListUpdate(name, sid, index, image, navigation) {
-    let uid = await CardConv.convertSID(sid);
-    let internalPath = '';
-
-    if (image !== '') {
-      internalPath = RNFS.DocumentDirectoryPath + '/' + new Date().valueOf();
-
-      if (image.startsWith('file://')) {
-        image = image.replace('file://', '');
-      }
-
-      await RNFS.copyFile(image, internalPath);
-
-      internalPath = 'file://' + internalPath;
-    }
-
-    if (index === null) {
-      this.setState(
-        {
-          cards: update(this.state.cards, {
-            $push: [{ name: name, sid: sid, uid: uid, image: internalPath }],
-          }),
-        },
-        async () => {
-          await AsyncStorage.setItem('cards', JSON.stringify(this.state.cards));
-        },
-      );
-    } else {
-      this.setState(
-        {
-          cards: update(this.state.cards, {
-            [index]: {
-              name: { $set: name },
-              sid: { $set: sid },
-              uid: { $set: uid },
-              image: { $set: internalPath },
-            },
-          }),
-        },
-        async () => {
-          await AsyncStorage.setItem('cards', JSON.stringify(this.state.cards));
-        },
-      );
-    }
-
-    Alert.alert('', i18n.t('alert_save_content'), [
-      {
-        text: i18n.t('alert_save_yes'),
-        onPress: () => {
-          navigation.goBack();
-        },
-      },
-    ]);
-  }
-
-  cardListDelete(index) {
-    Alert.alert(i18n.t('alert_delete_title'), i18n.t('alert_delete_content'), [
-      { text: i18n.t('alert_delete_no') },
-      {
-        text: i18n.t('alert_delete_yes'),
-        onPress: () => {
-          if (this.state.cards[index].image !== '') {
-            RNFS.unlink(this.state.cards[index].image);
-          }
-          this.setState(
-            {
-              cards: update(this.state.cards, {
-                $splice: [[index, 1]],
-              }),
-            },
-            async () => {
-              await AsyncStorage.setItem(
-                'cards',
-                JSON.stringify(this.state.cards),
-              );
-            },
-          );
-        },
-      },
-    ]);
-  }
-
-  render() {
-    let cardWidget = [];
-
-    this.state.cards.forEach((card, index) => {
-      cardWidget.push(
-        <Card
-          card={card}
-          index={index}
-          onPress={(card, index) => this.switch(card, index)}
-          cardHeight={this.state.cardHeight}
-          disableCallback={(card, index) => this.disable(card, index)}
-          update={(name, sid, index, image, navigation) =>
-            this.cardListUpdate(name, sid, index, image, navigation)
-          }
-          delete={index => this.cardListDelete(index)}
-          navigation={this.props.navigation}
-        />,
-      );
-    });
-
-    return (
-      <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-        <StatusBar
-          barStyle="dark-content"
-          translucent={true}
-          backgroundColor={'#ffffff'}
-        />
-        <View
-          style={{
-            height: 48,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#ffffff',
-          }}>
-          <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text
-              style={{
-                fontSize: 17,
-                fontWeight: 'bold',
-                textAlignVertical: 'center',
-              }}>
-              {i18n.t('header_home')}
-            </Text>
-
-            <TouchableOpacity
-              style={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                right: 12,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={() =>
-                this.props.navigation.navigate('CardEditScreen', {
-                  update: (name, sid, index, image, navigation) =>
-                    this.cardListUpdate(name, sid, index, image, navigation),
-                })
-              }>
-              <Icon name="add" size={26} color={'rgba(0,0,0,0.7)'} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {this.state.cards && this.state.cards.length > 0 ? (
-          <ScrollView style={{ flex: 1 }}>{cardWidget}</ScrollView>
-        ) : (
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 17, color: '#9E9E9E' }}>
-              {i18n.t('main_empty_string')}
-            </Text>
-          </View>
-        )}
-      </SafeAreaView>
-    );
-  }
-}
-*/
+import { getCards, removeCard } from '../data/cards';
+import { RootStackParams } from '../../App';
+import { useNavigation } from '@react-navigation/native';
 
 const ListSeparator = () => <View style={styles.separator} />;
 
-const MainScreen = () => {
-  const [cards, setCards] = useState<Card[]>([
-    {
-      sid: '02FE000000000000',
-      name: 'e-amusement pass',
+const CardList = (props: { cards: Card[] }) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParams>>();
+  const cards = props.cards;
+  const [enabledCardIndex, setEnabledCardIndex] = useState<number | null>(null);
+
+  const toggleHcef = useCallback(
+    async (index: number) => {
+      const card = cards[index];
+      if (enabledCardIndex === index) {
+        // disable
+        await Hcef.disableService();
+        setEnabledCardIndex(null);
+      } else {
+        await Hcef.enableService(card.sid);
+        setEnabledCardIndex(index);
+      }
     },
-  ]);
+    [cards, enabledCardIndex],
+  );
+
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation((index: number) => removeCard(index), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('cards');
+    },
+  });
+
+  const onDelete = useCallback(
+    (index: number) => {
+      const card = cards[index];
+
+      Alert.alert('카드 삭제', `"${card.name}" 카드를 삭제하시겠습니까?`, [
+        {
+          text: '삭제',
+          onPress: () => {
+            deleteMutation.mutate(index);
+          },
+        },
+        { text: '취소' },
+      ]);
+    },
+    [cards, deleteMutation],
+  );
+
+  const onEdit = useCallback(
+    (index: number) => {
+      const card = cards[index];
+      navigation.navigate('Edit', {
+        index,
+        card,
+      });
+    },
+    [cards, navigation],
+  );
+
+  if (cards.length > 0) {
+    return (
+      <FlatList
+        data={cards}
+        contentContainerStyle={styles.cardListContainer}
+        renderItem={card => (
+          <CardView
+            card={card.item}
+            index={card.index}
+            onPress={toggleHcef}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            mainText={
+              card.index === enabledCardIndex
+                ? '터치해서 비활성화'
+                : '터치해서 활성화'
+            }
+          />
+        )}
+        ItemSeparatorComponent={ListSeparator}
+        ListHeaderComponent={ListSeparator}
+        ListFooterComponent={ListSeparator}
+      />
+    );
+  } else {
+    return (
+      <View style={styles.placeholderContainer}>
+        <Text style={styles.placeholderText}>카드를 추가해 주세요.</Text>
+      </View>
+    );
+  }
+};
+
+const AddButton = (props: { onPress?: () => unknown }) => {
+  return (
+    <Shadow
+      containerStyle={styles.addButtonContainer}
+      distance={4}
+      offset={[0, 2]}
+    >
+      <TouchableOpacity style={styles.addButton} onPress={props.onPress}>
+        <FontAwesome5 name={'plus'} style={styles.addButtonIcon} />
+      </TouchableOpacity>
+    </Shadow>
+  );
+};
+
+type MainScreenProps = NativeStackScreenProps<RootStackParams, 'Main'>;
+
+const MainScreen = (props: MainScreenProps) => {
+  const { navigation } = props;
+
+  // check native hcef module
+  useEffect(() => {
+    if (!Hcef.support) {
+      Alert.alert(
+        '오류',
+        '이 기기는 HCE-F를 지원하지 않습니다. 다른 기기로 다시 시도해 주세요.',
+        [
+          {
+            text: '확인',
+          },
+        ],
+      );
+
+      return;
+    }
+
+    if (!Hcef.enabled) {
+      Alert.alert(
+        '오류',
+        'HCE-F 초기 설정에 실패했습니다.\n앱을 종료한 뒤, NFC를 활성화하고 다시 실행해 주세요.',
+        [
+          {
+            text: '확인',
+          },
+        ],
+      );
+
+      return;
+    }
+  }, []);
+
+  // load card list from async storage
+  const cardsQuery = useQuery<Card[]>('cards', getCards);
+
+  const goToAdd = useCallback(() => {
+    navigation.navigate('Add');
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
-
-      {cards.length > 0 ? (
-        <FlatList
-          style={styles.list}
-          data={cards}
-          renderItem={card => <CardView card={card.item} />}
-          ItemSeparatorComponent={ListSeparator}
-          ListHeaderComponent={View}
-          ListHeaderComponentStyle={styles.separator}
-          ListFooterComponent={View}
-          ListFooterComponentStyle={styles.separator}
-        />
+      <StatusBar
+        backgroundColor={'transparent'}
+        barStyle={'dark-content'}
+        translucent
+      />
+      {cardsQuery.isSuccess ? (
+        <>
+          <CardList cards={cardsQuery.data} />
+          <AddButton onPress={goToAdd} />
+        </>
       ) : (
-        <View />
+        <View>
+          <ActivityIndicator size={'large'} />
+        </View>
       )}
     </View>
   );
@@ -320,12 +197,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'stretch',
   },
-  list: {
-    // paddingHorizontal: 16,
+  cardListContainer: {
+    paddingHorizontal: 16,
   },
   separator: {
     height: 16,
+  },
+  placeholderContainer: {
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#9E9E9E',
+  },
+  addButtonContainer: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+  },
+  addButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 64,
+    backgroundColor: '#f9f9f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonIcon: {
+    color: 'skyblue',
+    fontSize: 24,
   },
 });
 

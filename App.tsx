@@ -1,29 +1,28 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-
-import MainScreen from './src/screens/MainScreen';
-// import CardEditScreen from './src/screens/CardEditScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const Stack = createNativeStackNavigator();
+import MainScreen from './src/screens/MainScreen';
+import { Card } from './src/types';
+import CardEditScreen from './src/screens/CardEditScreen';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+export type RootStackParams = {
+  Main: undefined;
+  Add: undefined;
+  Edit: { card: Card; index: number };
+};
+
+const queryClient = new QueryClient();
+const Stack = createNativeStackNavigator<RootStackParams>();
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name={'Main'}
-          component={MainScreen}
-          options={{
-            title: '홈',
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
             headerStyle: {
               backgroundColor: '#fff',
             },
@@ -32,41 +31,28 @@ const App = () => {
               fontWeight: 'bold',
             },
           }}
-        />
-        {/*<Stack.Screen name={'Edit'} component={CardEditScreen} />*/}
-      </Stack.Navigator>
-    </NavigationContainer>
+        >
+          <Stack.Screen
+            name={'Main'}
+            component={MainScreen}
+            options={{
+              title: '홈',
+            }}
+          />
+          <Stack.Screen
+            name={'Add'}
+            component={CardEditScreen}
+            options={{ title: '카드 추가' }}
+          />
+          <Stack.Screen
+            name={'Edit'}
+            component={CardEditScreen}
+            options={{ title: '카드 편집' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 };
 
 export default App;
-
-/*
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    setI18nConfig();
-  }
-
-  componentDidMount() {
-    RNLocalize.addEventListener('change', this.handleLocalizationChange);
-  }
-
-  componentWillUnmount() {
-    RNLocalize.removeEventListener('change', this.handleLocalizationChange);
-  }
-
-  handleLocalizationChange = () => {
-    setI18nConfig();
-    this.forceUpdate();
-  };
-
-  render() {
-    return (
-      <>
-        <AppContainer />
-      </>
-    );
-  }
-}
-*/

@@ -1,34 +1,113 @@
-import React, { useMemo } from 'react';
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Card } from '../types';
+import React, { useMemo, useCallback } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useQuery } from 'react-query';
 import { Shadow } from 'react-native-shadow-2';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Clipboard from '@react-native-clipboard/clipboard';
+
+import CardConv from '../modules/CardConv';
+import { Card } from '../types';
 
 interface CardViewProps {
   card: Card;
-  isEnabled?: boolean;
-  onPress?: (card: Card) => unknown;
-  onEdit?: (card: Card) => unknown;
-  onDelete?: (card: Card) => unknown;
+  index: number;
+  mainText: string;
+  disabledMainButton?: boolean;
+  hideBottomMenu?: boolean;
+  onPress?: (index: number) => unknown;
+  onEdit?: (index: number) => unknown;
+  onDelete?: (index: number) => unknown;
 }
 
 const CardView = (props: CardViewProps) => {
+  const { card, index, onPress: onPressFromProps, onEdit, onDelete } = props;
+
+  const onPress = useCallback(() => {
+    onPressFromProps?.(index);
+  }, [onPressFromProps, index]);
+
+  const uid = useQuery(['uid', card.sid], () => CardConv.convertSID(card.sid));
+
+  const styledUid = useMemo(() => {
+    if (uid.isSuccess) {
+      return (
+        uid.data.match(/[A-Za-z0-9]{4}/g)?.join(' - ') ??
+        '올바르지 않은 카드 번호'
+      );
+    } else {
+      return '카드 번호 로딩중...';
+    }
+  }, [uid]);
+
+  const copyUid = useCallback(() => {
+    if (uid.isSuccess) {
+      Clipboard.setString(uid.data);
+    }
+  }, [uid]);
+
+  const onPressDelete = useCallback(() => {
+    onDelete?.(index);
+  }, [index, onDelete]);
+
+  const onPressEdit = useCallback(() => {
+    onEdit?.(index);
+  }, [index, onEdit]);
+
   return (
-    <Shadow
-      containerStyle={styles.shadowContainer}
-      style={styles.shadowChildContainerStyle}
-      distance={4}
-      offset={[0, 2]}
-    >
-      <View style={styles.background}>
-        <Text>Card 1</Text>
-      </View>
-    </Shadow>
+    <>
+      <Shadow
+        containerStyle={styles.shadowContainer}
+        style={styles.shadowChildContainerStyle}
+        distance={4}
+        offset={[0, 2]}
+      >
+        <View style={styles.background}>
+          <TouchableOpacity
+            style={styles.activateButton}
+            onPress={onPress}
+            disabled={props.disabledMainButton ?? false}
+          >
+            <View style={styles.topLeftArea}>
+              <TouchableOpacity onPress={copyUid}>
+                <Text
+                  style={styles.cardNameText}
+                  numberOfLines={1}
+                  ellipsizeMode={'tail'}
+                >
+                  {card.name}
+                </Text>
+                <View style={styles.cardNumberContainer}>
+                  <Text style={styles.cardNumberText}>{styledUid}</Text>
+                  <FontAwesome5
+                    name={'copy'}
+                    style={[styles.cardNumberCopyIcon]}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.enableText}>{props.mainText}</Text>
+
+            {props.hideBottomMenu !== true && (
+              <View style={styles.bottomMenuContainer}>
+                <TouchableOpacity
+                  style={styles.bottomMenuButton}
+                  onPress={onPressEdit}
+                >
+                  <Text style={styles.bottomMenuButtonText}>편집</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bottomMenuButton}
+                  onPress={onPressDelete}
+                >
+                  <Text style={styles.bottomMenuButtonText}>삭제</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      </Shadow>
+    </>
   );
 };
 
@@ -36,7 +115,6 @@ const styles = StyleSheet.create({
   shadowContainer: {
     flex: 1,
     aspectRatio: 85.6 / 53.98,
-    marginHorizontal: 16,
   },
   shadowChildContainerStyle: {
     flex: 1,
@@ -49,180 +127,64 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     backgroundColor: 'skyblue',
   },
-  cardNameText: {
+  activateButton: {
+    flex: 1,
+    justifyContent: 'center',
+    borderRadius: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  topLeftArea: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    fontSize: 17,
+    top: 16,
+    left: 16,
+    right: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cardNameText: {
+    padding: 0,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#ffffff',
   },
+  cardNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   cardNumberText: {
-    paddingTop: 0,
-    textAlign: 'center',
     alignSelf: 'center',
-    color: '#E0E0E0',
+    color: '#f1f1f1',
     fontSize: 14,
   },
+  cardNumberCopyIcon: {
+    color: '#f1f1f1',
+    fontSize: 10,
+    paddingLeft: 4,
+  },
   enableText: {
-    paddingTop: 8,
     textAlign: 'center',
     alignSelf: 'center',
     fontSize: 24,
     color: '#FAFAFA',
     fontWeight: '500',
   },
-  submenuText: {
+  bottomMenuContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 48,
+    flexDirection: 'row',
+  },
+  bottomMenuButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomMenuButtonText: {
     fontSize: 14,
     color: '#FAFAFA',
   },
 });
 
 export default CardView;
-
-/*
-class Card extends React.Component {
-  async onPress() {
-    this.props.onPress(this.props.card, this.props.index);
-  }
-
-  async disable() {
-    if (typeof this.props.disableCallback === 'function') {
-      this.props.disableCallback(this.props.card, this.props.index);
-    }
-  }
-
-  render() {
-    let cardContent = (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          borderRadius: 8,
-        }}>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            onPress={this.onPress.bind(this)}>
-            <Text
-              style={{
-                position: 'absolute',
-                top: 20,
-                left: 20,
-                fontSize: 17,
-                fontWeight: 'bold',
-                color: '#ffffff',
-              }}>
-              {this.props.card.name}
-            </Text>
-
-            <View style={{ flex: 1, justifyContent: 'center', paddingTop: 20 }}>
-              <Text
-                style={{
-                  paddingTop: 0,
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  color: '#E0E0E0',
-                  fontSize: 14,
-                }}>
-                {this.props.card.uid.substr(0, 4) +
-                  '-' +
-                  this.props.card.uid.substr(4, 4) +
-                  '-' +
-                  this.props.card.uid.substr(8, 4) +
-                  '-' +
-                  this.props.card.uid.substr(12, 4)}
-              </Text>
-              <Text
-                style={{
-                  paddingTop: 8,
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  fontSize: 24,
-                  color: '#FAFAFA',
-                  fontWeight: '500',
-                  letterSpacing: -0.5,
-                }}>
-                {this.props.card.enabled
-                  ? i18n.t('card_touch_to_disable')
-                  : i18n.t('card_touch_to_enable')}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={{ height: 1, backgroundColor: '#FAFAFA' }} />
-        <View style={{ height: 48, flexDirection: 'row' }}>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={() =>
-              this.props.navigation.navigate('CardEditScreen', {
-                name: this.props.card.name,
-                sid: this.props.card.sid,
-                image: this.props.card.image,
-                index: this.props.index,
-                update: this.props.update,
-              })
-            }>
-            <Text style={{ fontSize: 14, color: '#FAFAFA' }}>
-              {i18n.t('card_edit')}
-            </Text>
-          </TouchableOpacity>
-          <View style={{ width: 1, backgroundColor: '#FAFAFA' }} />
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={() => this.props.delete(this.props.index)}>
-            <Text style={{ fontSize: 14, color: '#ffffff' }}>
-              {i18n.t('card_delete')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-
-    return (
-      <View
-        style={[
-          {
-            borderRadius: 8,
-            height: this.props.cardHeight,
-            marginTop: 24,
-            marginHorizontal: 24,
-            justifyContent: 'center',
-          },
-        ]}>
-        {this.props.card.image ? (
-          <ImageBackground
-            source={{ uri: this.props.card.image }}
-            style={{
-              flex: 1,
-              resizeMode: 'contain',
-            }}
-            blurRadius={2}
-            borderRadius={8}>
-            {cardContent}
-          </ImageBackground>
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              resizeMode: 'contain',
-              backgroundColor: '#03A9F4',
-            }}
-            blurRadius={2}
-            borderRadius={8}>
-            {cardContent}
-          </View>
-        )}
-      </View>
-    );
-  }
-}
-*/
