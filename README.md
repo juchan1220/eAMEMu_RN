@@ -3,7 +3,7 @@ HCE-F를 이용한 안드로이드용 e-amusement pass 에뮬레이션 앱
 
 ## 다운로드
 
-[여기](/release/latest)에서 다운로드할 수 있습니다.
+[여기](/releases/latest)에서 다운로드할 수 있습니다.
 
 ## 요구사항
 
