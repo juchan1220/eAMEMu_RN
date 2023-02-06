@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu
+package dev.nulldori.eamemu
 
 class B(arg4: ByteArray) {
     private val k: IntArray

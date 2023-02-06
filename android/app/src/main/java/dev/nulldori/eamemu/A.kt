@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu
+package dev.nulldori.eamemu
 
 import java.io.UnsupportedEncodingException
 import kotlin.experimental.xor

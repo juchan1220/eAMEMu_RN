@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu;
+package dev.nulldori.eamemu;
 
 import android.nfc.cardemulation.HostNfcFService;
 import android.os.Bundle;

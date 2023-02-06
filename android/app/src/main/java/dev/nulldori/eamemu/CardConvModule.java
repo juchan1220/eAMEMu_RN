@@ -1,19 +1,9 @@
-package tk.nulldori.eamemu;
+package dev.nulldori.eamemu;
 
-import android.widget.Toast;
-
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import tk.nulldori.eamemu.A;
 
 public class CardConvModule extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;

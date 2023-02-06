@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu
+package dev.nulldori.eamemu
 
 object E {
     fun a(arg4: CharSequence): ByteArray {

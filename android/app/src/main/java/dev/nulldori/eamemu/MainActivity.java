@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu;
+package dev.nulldori.eamemu;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

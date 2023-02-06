@@ -1,4 +1,4 @@
-package tk.nulldori.eamemu;
+package dev.nulldori.eamemu;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,9 +50,9 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
         isHceFSupport = true;
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(getReactApplicationContext());
-        if(nfcAdapter != null){
+        if(nfcAdapter != null && nfcAdapter.isEnabled()){
             nfcFCardEmulation = NfcFCardEmulation.getInstance(nfcAdapter);
-            componentName = new ComponentName("tk.nulldori.eamemu","tk.nulldori.eamemu.eAMEMuService");
+            componentName = new ComponentName("dev.nulldori.eamemu","dev.nulldori.eamemu.eAMEMuService");
             if(nfcFCardEmulation != null){
                 nfcFCardEmulation.registerSystemCodeForService(componentName, "4000");
                 isHceFEnabled = true;
@@ -74,52 +74,23 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
     }
 
     @ReactMethod
-    void setSID(String sid, Promise promise){
+    void enableService(String sid, Promise promise){
         if(nfcFCardEmulation == null || componentName == null){
             promise.reject("NULL_ERROR", "nfcFCardEmulation or componentName is null");
+            return ;
         }
 
-        sid = sid.toUpperCase();
-
-        if(sid.length() != 16)
-            promise.reject("LENGTH_ERROR", "The length of sid must be 16");
-        if(sid.matches("[0-9a-fA-F]+") == false)
-            promise.reject("HEX_ERROR", "SID must be 16-digit hex number");
-        if(sid.substring(0,4).contentEquals("02FE") == false)
-            promise.reject("PREFIX_ERROR", "SID must be start with 02FE");
-
-        boolean result = nfcFCardEmulation.setNfcid2ForService(componentName, sid);
-
-        if (result) {
-            promise.resolve(true);
-        } else {
-            promise.reject("FAIL", "setNfcid2ForService returned false");
-        }
-    }
-
-    @ReactMethod
-    void enableService(Promise promise){
-        if(nfcFCardEmulation == null || componentName == null){
-            promise.reject("NULL_ERROR", "nfcFCardEmulation or componentName is null");
+        if (!nfcFCardEmulation.setNfcid2ForService(componentName, sid)) {
+            promise.reject("SET_NFCID2_FAIL", "setNfcid2ForService returned false");
+            return ;
         }
 
-        String cardId = nfcFCardEmulation.getNfcid2ForService(componentName);
-
-        if(cardId.length() != 16)
-            promise.reject("LENGTH_ERROR", "The length of sid must be 16");
-        if(cardId.matches("[0-9a-fA-F]+") == false)
-            promise.reject("HEX_ERROR", "SID must be 16-digit hex number");
-        if(cardId.substring(0,4).contentEquals("02FE") == false)
-            promise.reject("PREFIX_ERROR", "SID must be start with 02FE");
-
-        boolean result = nfcFCardEmulation.enableService(getCurrentActivity(), componentName);
-
-        if (result) {
-            nowUsing = true;
-            promise.resolve(true);
-        } else {
+        if (!nfcFCardEmulation.enableService(getCurrentActivity(), componentName)) {
             promise.reject("FAIL", "enableService returned false");
         }
+
+        nowUsing = true;
+        promise.resolve(true);
     }
 
     @ReactMethod
@@ -128,14 +99,12 @@ public class HcefModule extends ReactContextBaseJavaModule implements LifecycleE
             promise.reject("NULL_ERROR", "nfcFCardEmulation or componentName is null");
         }
 
-        boolean result = nfcFCardEmulation.disableService(getCurrentActivity());
-
-        if (result) {
-            nowUsing = false;
-            promise.resolve(true);
-        } else {
+        if (!nfcFCardEmulation.disableService(getCurrentActivity())) {
             promise.reject("FAIL", "disableService returned false");
         }
+
+        nowUsing = false;
+        promise.resolve(true);
     }
 
     @Override

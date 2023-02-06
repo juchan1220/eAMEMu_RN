@@ -98,14 +98,13 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "tk.nulldori.eamemu"
+    namespace "dev.nulldori.eamemu"
     defaultConfig {
-        applicationId "tk.nulldori.eamemu"
+        applicationId "dev.nulldori.eamemu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 220
-        versionName "2.2.0"
-        vectorDrawables.useSupportLibrary = true
+        versionCode 300
+        versionName "3.0.0"
     }
     splits {
         abi {
@@ -172,8 +171,6 @@ dependencies {
         implementation jscFlavor
     }
 
-    // for react-native-fs
-    implementation project(':react-native-fs')
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 }
 
