@@ -71,7 +71,10 @@ const TextField = (props: TextFieldProps) => {
         style={isFocused ? styles.textInputTitleFocused : {}}
       />
       <TextInput
-        style={styles.textInput}
+        style={[
+          styles.textInput,
+          textInputProps.editable === false ? styles.textInputDisabled : {},
+        ]}
         onFocus={onFocusCallback}
         onBlur={onBlurCallback}
         {...textInputProps}
@@ -244,6 +247,10 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 16,
     paddingTop: 4,
+    color: 'black',
+  },
+  textInputDisabled: {
+    color: 'rgba(0, 0, 0, 0.5)',
   },
   textInputTitle: {
     fontSize: 14,
