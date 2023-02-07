@@ -20,12 +20,10 @@ HCE-F를 이용한 안드로이드용 e-amusement pass 에뮬레이션 앱
 
 ## 참고사항
 
-이 앱을 사용할 때에는 카드 에뮬레이션을 사용하는 다른 앱 (모바일 티머니 등)을 종료하고 이용해 주세요.
-
-삼성 기기의 경우, 기본 NFC 설정 (설정 > 연결 > NFC 및 비접촉 결제 > 우측 상단 ... 버튼 > 기본 NFC 설정) 을 자동 선택 또는 안드로이드 운영체제로 설정하는 것을 권장합니다.
+삼성 기기의 경우, 기본 NFC 설정 (설정 > 연결 > NFC 및 비접촉 결제 > 우측 상단 ⋯ 버튼 > 기본 NFC 설정) 을 자동 선택 또는 안드로이드 운영체제로 설정하는 것을 권장합니다.
 
 케이스 착용 시 인식률이 크게 떨어지는 사례가 있습니다. 카드가 인식되지 않는 경우 케이스를 제거하고 시도해 주세요.
 
 
-### Special Thanks for 
+## Special Thanks for 
 * [@dogelition_man](https://github.com/ledoge) (provided card number conversion code)
