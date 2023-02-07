@@ -3,23 +3,22 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
-  TextInput,
   TextInputProps,
   ViewStyle,
   TextInputFocusEventData,
   NativeSyntheticEvent,
-  TextStyle,
+  TouchableOpacityProps,
 } from 'react-native';
-import CardConv from '../modules/CardConv';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParams } from '../../App';
 import { Shadow } from 'react-native-shadow-2';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import styled from 'styled-components/native';
+
+import CardConv from '../modules/CardConv';
+import { RootStackParams } from '../../App';
 import CardView from '../components/Card';
 import { addCard, updateCard } from '../data/cards';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { Card } from '../types';
 
 type TextFieldProps = TextInputProps & {
@@ -38,9 +37,69 @@ const generateRandomCardNumber = () => {
   return `02FE${getRandom4Byte()}${getRandom4Byte()}${getRandom4Byte()}`;
 };
 
-const FieldTitle = (props: { title: string; style?: TextStyle }) => {
+const Container = styled.KeyboardAvoidingView`
+  flex: 1;
+  background-color: ${props => props.theme.colors.background};
+`;
+
+const FieldTitle = styled(Text)<{ focused: boolean }>`
+  font-size: 14px;
+  font-weight: bold;
+  color: ${props =>
+    props.focused
+      ? props.theme.colors.primary
+      : props.theme.colors.placeholder};
+`;
+
+const FieldBottomBorder = styled.View<{ focused: boolean }>`
+  padding-top: 2px;
+  background-color: ${props =>
+    props.focused
+      ? props.theme.colors.primary
+      : props.theme.colors.placeholder};
+  height: ${props => (props.focused ? 2 : 1)}px;
+`;
+
+const StyledTextInput = styled.TextInput`
+  font-size: 16px;
+  padding-top: 4px;
+  color: ${props =>
+    props.editable !== false
+      ? props.theme.colors.text
+      : props.theme.colors.disabled};
+`;
+
+const ButtonContainer = styled.TouchableOpacity`
+  height: 48px;
+  background-color: ${props => props.theme.colors.primary};
+  justify-content: center;
+  align-items: center;
+`;
+
+const ButtonText = styled.Text`
+  font-size: 16px;
+  color: ${props => props.theme.colors.white};
+`;
+
+type ButtonProps = {
+  text: string;
+  containerStyle: ViewStyle;
+} & TouchableOpacityProps;
+
+const Button = (props: ButtonProps) => {
+  const { text, containerStyle, ...touchableProps } = props;
+
   return (
-    <Text style={[styles.textInputTitle, props.style]}>{props.title}</Text>
+    <Shadow
+      style={styles.buttonShadowStyle}
+      containerStyle={containerStyle}
+      distance={4}
+    >
+      {/* shadow가 정상적으로 적용되지 않는 버그가 있어서 borderRadius 스타일을 분리 */}
+      <ButtonContainer {...touchableProps} style={styles.buttonBorderRadius}>
+        <ButtonText>{text}</ButtonText>
+      </ButtonContainer>
+    </Shadow>
   );
 };
 
@@ -66,25 +125,13 @@ const TextField = (props: TextFieldProps) => {
 
   return (
     <View style={containerStyle}>
-      <FieldTitle
-        title={title}
-        style={isFocused ? styles.textInputTitleFocused : {}}
-      />
-      <TextInput
-        style={[
-          styles.textInput,
-          textInputProps.editable === false ? styles.textInputDisabled : {},
-        ]}
+      <FieldTitle focused={isFocused}>{title}</FieldTitle>
+      <StyledTextInput
         onFocus={onFocusCallback}
         onBlur={onBlurCallback}
         {...textInputProps}
       />
-      <View
-        style={[
-          styles.textInputBottomBorder,
-          isFocused ? styles.textInputBottomBorderFocused : {},
-        ]}
-      />
+      <FieldBottomBorder focused={isFocused} />
     </View>
   );
 };
@@ -171,25 +218,23 @@ const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
   ]);
 
   return (
-    <KeyboardAvoidingView style={styles.screen}>
+    <Container>
       <ScrollView
         contentContainerStyle={styles.scrollView}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.cardPreviewContainer}>
-          <CardView
-            card={{
-              sid: cardNumber,
-              name: cardName,
-            }}
-            mainText={'카드 미리보기'}
-            index={0 /* dummy index */}
-            disabledMainButton={true}
-            hideBottomMenu={true}
-          />
-        </View>
+        <CardView
+          card={{
+            sid: cardNumber,
+            name: cardName,
+          }}
+          mainText={'카드 미리보기'}
+          index={0 /* dummy index */}
+          disabledMainButton={true}
+          hideBottomMenu={true}
+        />
 
-        <View style={[styles.fieldItemContainer, { paddingTop: 0 }]}>
+        <View style={[styles.fieldItemContainer]}>
           <TextField
             title={'카드 이름'}
             value={cardName}
@@ -199,35 +244,21 @@ const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
 
         <View style={styles.fieldItemContainer}>
           <TextField title={'카드 번호'} value={styledUid} editable={false} />
-          <Shadow
-            style={styles.buttonShadowStyle}
+          <Button
             containerStyle={styles.cardNumberChangeButton}
-            distance={4}
-          >
-            <TouchableOpacity
-              style={[styles.button]}
-              onPress={changeCardNumber}
-              disabled={!uid.isSuccess}
-            >
-              <Text style={styles.buttonText}>카드 번호 변경</Text>
-            </TouchableOpacity>
-          </Shadow>
+            onPress={changeCardNumber}
+            disabled={!uid.isSuccess}
+            text={'카드 번호 변경'}
+          />
         </View>
 
-        <Shadow
-          style={styles.buttonShadowStyle}
-          containerStyle={[
-            styles.cardNumberChangeButton,
-            styles.saveButtonContainerStyle,
-          ]}
-          distance={4}
-        >
-          <TouchableOpacity style={[styles.button]} onPress={save}>
-            <Text style={styles.buttonText}>저장</Text>
-          </TouchableOpacity>
-        </Shadow>
+        <Button
+          onPress={save}
+          containerStyle={styles.saveButton}
+          text={'저장'}
+        />
       </ScrollView>
-    </KeyboardAvoidingView>
+    </Container>
   );
 };
 
@@ -238,58 +269,20 @@ const styles = StyleSheet.create({
   scrollView: {
     padding: 16,
   },
-  cardPreviewContainer: {
-    paddingBottom: 32,
-  },
   fieldItemContainer: {
-    paddingTop: 24,
-  },
-  textInput: {
-    fontSize: 16,
-    paddingTop: 4,
-    color: 'black',
-  },
-  textInputDisabled: {
-    color: 'rgba(0, 0, 0, 0.5)',
-  },
-  textInputTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#9e9e9e',
-  },
-  textInputTitleFocused: {
-    color: 'skyblue',
-  },
-  textInputBottomBorder: {
-    paddingTop: 2,
-    backgroundColor: '#9e9e9e',
-    height: 1,
-  },
-  textInputBottomBorderFocused: {
-    backgroundColor: 'skyblue',
-    height: 2,
-  },
-  button: {
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: 'skyblue',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 32,
   },
   buttonShadowStyle: {
     width: '100%',
   },
-  saveButtonContainerStyle: {
+  buttonBorderRadius: {
+    borderRadius: 8,
+  },
+  saveButton: {
     marginTop: 32,
   },
   cardNumberChangeButton: {
     marginTop: 16,
-  },
-  cardImageSelectButton: {
-    marginTop: 8,
-  },
-  buttonText: {
-    color: 'white',
   },
 });
 

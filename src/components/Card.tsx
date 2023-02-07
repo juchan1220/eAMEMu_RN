@@ -1,9 +1,10 @@
 import React, { useMemo, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextProps, TouchableOpacity, View } from 'react-native';
 import { useQuery } from 'react-query';
 import { Shadow } from 'react-native-shadow-2';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Clipboard from '@react-native-clipboard/clipboard';
+import styled from 'styled-components/native';
 
 import CardConv from '../modules/CardConv';
 import { Card } from '../types';
@@ -18,6 +19,46 @@ interface CardViewProps {
   onEdit?: (index: number) => unknown;
   onDelete?: (index: number) => unknown;
 }
+
+const Background = styled.View`
+  flex: 1;
+  border-radius: 8px;
+  justify-content: center;
+  background-color: ${props => props.theme.colors.primary};
+`;
+
+const CardName = styled.Text.attrs<TextProps>({
+  numberOfLines: 1,
+  ellipsizeMode: 'tail',
+})`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${props => props.theme.colors.white};
+`;
+
+const CardNumber = styled.Text`
+  color: ${props => props.theme.colors.gray200};
+  font-size: 14px;
+`;
+
+const CopyIcon = styled(FontAwesome5).attrs({ name: 'copy' })`
+  color: ${props => props.theme.colors.gray200};
+  font-size: 10px;
+  padding-left: 4px;
+`;
+
+const ActivateButtonText = styled.Text`
+  text-align: center;
+  align-self: center;
+  font-size: 24px;
+  font-weight: 500;
+  color: ${props => props.theme.colors.white};
+`;
+
+const BottomButtonText = styled.Text`
+  font-size: 14px;
+  color: ${props => props.theme.colors.white};
+`;
 
 const CardView = (props: CardViewProps) => {
   const { card, index, onPress: onPressFromProps, onEdit, onDelete } = props;
@@ -61,7 +102,7 @@ const CardView = (props: CardViewProps) => {
         distance={4}
         offset={[0, 2]}
       >
-        <View style={styles.background}>
+        <Background>
           <TouchableOpacity
             style={styles.activateButton}
             onPress={onPress}
@@ -69,24 +110,15 @@ const CardView = (props: CardViewProps) => {
           >
             <View style={styles.topLeftArea}>
               <TouchableOpacity onPress={copyUid}>
-                <Text
-                  style={styles.cardNameText}
-                  numberOfLines={1}
-                  ellipsizeMode={'tail'}
-                >
-                  {card.name}
-                </Text>
+                <CardName>{card.name}</CardName>
                 <View style={styles.cardNumberContainer}>
-                  <Text style={styles.cardNumberText}>{styledUid}</Text>
-                  <FontAwesome5
-                    name={'copy'}
-                    style={[styles.cardNumberCopyIcon]}
-                  />
+                  <CardNumber>{styledUid}</CardNumber>
+                  <CopyIcon />
                 </View>
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.enableText}>{props.mainText}</Text>
+            <ActivateButtonText>{props.mainText}</ActivateButtonText>
 
             {props.hideBottomMenu !== true && (
               <View style={styles.bottomMenuContainer}>
@@ -94,18 +126,18 @@ const CardView = (props: CardViewProps) => {
                   style={styles.bottomMenuButton}
                   onPress={onPressEdit}
                 >
-                  <Text style={styles.bottomMenuButtonText}>편집</Text>
+                  <BottomButtonText>편집</BottomButtonText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.bottomMenuButton}
                   onPress={onPressDelete}
                 >
-                  <Text style={styles.bottomMenuButtonText}>삭제</Text>
+                  <BottomButtonText>삭제</BottomButtonText>
                 </TouchableOpacity>
               </View>
             )}
           </TouchableOpacity>
-        </View>
+        </Background>
       </Shadow>
     </>
   );
@@ -120,18 +152,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-  background: {
-    flex: 1,
-    borderRadius: 8,
-    justifyContent: 'center',
-    resizeMode: 'contain',
-    backgroundColor: 'skyblue',
-  },
   activateButton: {
     flex: 1,
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   topLeftArea: {
     position: 'absolute',
@@ -141,32 +166,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  cardNameText: {
-    padding: 0,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
   cardNumberContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  cardNumberText: {
-    alignSelf: 'center',
-    color: '#f1f1f1',
-    fontSize: 14,
-  },
-  cardNumberCopyIcon: {
-    color: '#f1f1f1',
-    fontSize: 10,
-    paddingLeft: 4,
-  },
-  enableText: {
-    textAlign: 'center',
-    alignSelf: 'center',
-    fontSize: 24,
-    color: '#FAFAFA',
-    fontWeight: '500',
   },
   bottomMenuContainer: {
     position: 'absolute',
@@ -180,10 +182,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  bottomMenuButtonText: {
-    fontSize: 14,
-    color: '#FAFAFA',
   },
 });
 

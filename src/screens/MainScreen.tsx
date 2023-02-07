@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
-  Text,
-  StatusBar,
-  TouchableOpacity,
   Alert,
   StyleSheet,
   FlatList,
@@ -16,15 +13,43 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import styled from 'styled-components/native';
 
 import Hcef from '../modules/Hcef';
 import CardView from '../components/Card';
 import { Card } from '../types';
 import { getCards, removeCard } from '../data/cards';
 import { RootStackParams } from '../../App';
-import { useNavigation } from '@react-navigation/native';
 
-const ListSeparator = () => <View style={styles.separator} />;
+const Container = styled(View)`
+  flex: 1;
+  background-color: ${props => props.theme.colors.background};
+  justify-content: center;
+  align-items: center;
+`;
+
+const PlaceholderText = styled.Text`
+  font-size: 14px;
+  color: ${props => props.theme.colors.placeholder};
+`;
+
+const AddButton = styled.TouchableOpacity`
+  background-color: ${props => props.theme.colors.card};
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+`;
+
+const AddButtonIcon = styled(FontAwesome5).attrs({ name: 'plus' })`
+  color: ${props => props.theme.colors.primary};
+  font-size: 24px;
+`;
+
+const ListSeparator = styled.View`
+  height: 16px;
+`;
 
 const CardList = (props: { cards: Card[] }) => {
   const navigation =
@@ -85,6 +110,7 @@ const CardList = (props: { cards: Card[] }) => {
   if (cards.length > 0) {
     return (
       <FlatList
+        style={styles.cardList}
         data={cards}
         contentContainerStyle={styles.cardListContainer}
         renderItem={card => (
@@ -109,24 +135,10 @@ const CardList = (props: { cards: Card[] }) => {
   } else {
     return (
       <View style={styles.placeholderContainer}>
-        <Text style={styles.placeholderText}>카드를 추가해 주세요.</Text>
+        <PlaceholderText>카드를 추가해 주세요.</PlaceholderText>
       </View>
     );
   }
-};
-
-const AddButton = (props: { onPress?: () => unknown }) => {
-  return (
-    <Shadow
-      containerStyle={styles.addButtonContainer}
-      distance={4}
-      offset={[0, 2]}
-    >
-      <TouchableOpacity style={styles.addButton} onPress={props.onPress}>
-        <FontAwesome5 name={'plus'} style={styles.addButtonIcon} />
-      </TouchableOpacity>
-    </Shadow>
-  );
 };
 
 type MainScreenProps = NativeStackScreenProps<RootStackParams, 'Main'>;
@@ -173,62 +185,48 @@ const MainScreen = (props: MainScreenProps) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <StatusBar
-        backgroundColor={'transparent'}
-        barStyle={'dark-content'}
-        translucent
-      />
+    <Container>
       {cardsQuery.isSuccess ? (
         <>
           <CardList cards={cardsQuery.data} />
-          <AddButton onPress={goToAdd} />
+
+          <Shadow
+            containerStyle={styles.addButtonContainer}
+            distance={4}
+            offset={[0, 2]}
+          >
+            {/* shadow가 정상적으로 적용되지 않는 버그가 있어서 borderRadius 스타일을 분리 */}
+            <AddButton onPress={goToAdd} style={styles.addButtonRadius}>
+              <AddButtonIcon />
+            </AddButton>
+          </Shadow>
         </>
       ) : (
         <View>
           <ActivityIndicator size={'large'} />
         </View>
       )}
-    </View>
+    </Container>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'stretch',
+  cardList: {
+    alignSelf: 'stretch',
   },
   cardListContainer: {
     paddingHorizontal: 16,
   },
-  separator: {
-    height: 16,
-  },
   placeholderContainer: {
     alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: '#9E9E9E',
   },
   addButtonContainer: {
     position: 'absolute',
     right: 24,
     bottom: 24,
   },
-  addButton: {
-    width: 64,
-    height: 64,
+  addButtonRadius: {
     borderRadius: 64,
-    backgroundColor: '#f9f9f9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addButtonIcon: {
-    color: 'skyblue',
-    fontSize: 24,
   },
 });
 
