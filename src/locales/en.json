@@ -1,0 +1,41 @@
+{
+  "title": {
+    "home": "Home",
+    "card_add": "Add",
+    "card_edit": "Edit"
+  },
+  "alert": {
+    "title": {
+      "error": "Error",
+      "card_remove": "Remove"
+    },
+    "body": {
+      "hcef_not_support": "This device does not support HCE-F. Please try again with another device.",
+      "hcef_init_fail": "Failed to initialize HCE-F.\nAfter activating NFC, please restart the app\n",
+      "card_remove": "Do you want to remove the card \"{{cardName}}\"?"
+    },
+    "button": {
+      "confirm": "Confirm",
+      "remove": "Remove",
+      "cancel": "Cancel"
+    }
+  },
+  "main": {
+    "please_add_a_card": "Please add a card."
+  },
+  "card": {
+    "touch_to_activate": "Tap to activate",
+    "touch_to_deactivate": "Tap to deactivate",
+    "edit": "Edit",
+    "remove": "Remove"
+  },
+  "card_edit": {
+    "loading_card_number": "Loading card number...",
+    "invalid_card_number": "Invalid card number",
+    "card_preview": "Card Preview",
+    "card_name": "Card Name",
+    "card_number": "Card Number",
+    "change_card_number": "Change card number",
+    "save": "Save"
+  }
+}

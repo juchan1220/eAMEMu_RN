@@ -13,6 +13,9 @@ import { ThemeProvider } from 'styled-components/native';
 import LightTheme from './src/themes/lightTheme';
 import DarkTheme from './src/themes/darkTheme';
 
+import './src/locales/i18n';
+import { useTranslation } from 'react-i18next';
+
 export type RootStackParams = {
   Main: undefined;
   Add: undefined;
@@ -23,6 +26,7 @@ const queryClient = new QueryClient();
 const Stack = createNativeStackNavigator<RootStackParams>();
 
 const App = () => {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const theme = useMemo(
     () => (colorScheme === 'dark' ? DarkTheme : LightTheme),
@@ -54,18 +58,20 @@ const App = () => {
               name={'Main'}
               component={MainScreen}
               options={{
-                title: '홈',
+                title: t('title.home'),
               }}
             />
             <Stack.Screen
               name={'Add'}
               component={CardEditScreen}
-              options={{ title: '카드 추가' }}
+              options={{
+                title: t('title.card_add'),
+              }}
             />
             <Stack.Screen
               name={'Edit'}
               component={CardEditScreen}
-              options={{ title: '카드 편집' }}
+              options={{ title: t('title.card_edit') }}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -20,6 +20,7 @@ import { RootStackParams } from '../../App';
 import CardView from '../components/Card';
 import { addCard, updateCard } from '../data/cards';
 import { Card } from '../types';
+import { useTranslation } from 'react-i18next';
 
 type TextFieldProps = TextInputProps & {
   title: string;
@@ -140,6 +141,7 @@ type CardAddScreenProps = NativeStackScreenProps<RootStackParams, 'Add'>;
 type CardEditScreenProps = NativeStackScreenProps<RootStackParams, 'Edit'>;
 
 const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
+  const { t } = useTranslation();
   const initialData = props.route.params?.card ?? undefined;
 
   const [mode] = useState<'add' | 'edit'>(() => {
@@ -156,14 +158,14 @@ const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
 
   const styledUid = useMemo(() => {
     if (!uid.isSuccess) {
-      return '카드번호를 불러오는 중...';
+      return t('card_edit.loading_card_number');
     }
 
     return (
       uid.data.match(/[A-Za-z0-9]{4}/g)?.join(' - ') ??
-      '잘못된 카드 번호입니다.'
+      t('card_edit.invalid_card_number')
     );
-  }, [uid]);
+  }, [t, uid]);
 
   const onChangeCardName = useCallback((s: string) => {
     setCardName(s);
@@ -228,7 +230,7 @@ const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
             sid: cardNumber,
             name: cardName,
           }}
-          mainText={'카드 미리보기'}
+          mainText={t('card_edit.card_preview')}
           index={0 /* dummy index */}
           disabledMainButton={true}
           hideBottomMenu={true}
@@ -236,26 +238,30 @@ const CardEditScreen = (props: CardAddScreenProps | CardEditScreenProps) => {
 
         <View style={[styles.fieldItemContainer]}>
           <TextField
-            title={'카드 이름'}
+            title={t('card_edit.card_name')}
             value={cardName}
             onChangeText={onChangeCardName}
           />
         </View>
 
         <View style={styles.fieldItemContainer}>
-          <TextField title={'카드 번호'} value={styledUid} editable={false} />
+          <TextField
+            title={t('card_edit.card_number')}
+            value={styledUid}
+            editable={false}
+          />
           <Button
             containerStyle={styles.cardNumberChangeButton}
             onPress={changeCardNumber}
             disabled={!uid.isSuccess}
-            text={'카드 번호 변경'}
+            text={t('card_edit.change_card_number')}
           />
         </View>
 
         <Button
           onPress={save}
           containerStyle={styles.saveButton}
-          text={'저장'}
+          text={t('card_edit.save')}
         />
       </ScrollView>
     </Container>

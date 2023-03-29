@@ -21,6 +21,7 @@ import CardView from '../components/Card';
 import { Card } from '../types';
 import { getCards, removeCard } from '../data/cards';
 import { RootStackParams } from '../../App';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled(View)`
   flex: 1;
@@ -57,6 +58,8 @@ const CardList = (props: { cards: Card[] }) => {
   const cards = props.cards;
   const [enabledCardIndex, setEnabledCardIndex] = useState<number | null>(null);
 
+  const { t } = useTranslation();
+
   const toggleHcef = useCallback(
     async (index: number) => {
       const card = cards[index];
@@ -83,15 +86,19 @@ const CardList = (props: { cards: Card[] }) => {
     (index: number) => {
       const card = cards[index];
 
-      Alert.alert('카드 삭제', `"${card.name}" 카드를 삭제하시겠습니까?`, [
-        {
-          text: '삭제',
-          onPress: () => {
-            deleteMutation.mutate(index);
+      Alert.alert(
+        t('alert.title.card_remove'),
+        t('alert.body.card_remove', { cardName: card.name }),
+        [
+          {
+            text: t('alert.button.confirm'),
+            onPress: () => {
+              deleteMutation.mutate(index);
+            },
           },
-        },
-        { text: '취소' },
-      ]);
+          { text: t('alert.button.cancel') },
+        ],
+      );
     },
     [cards, deleteMutation],
   );
@@ -122,8 +129,8 @@ const CardList = (props: { cards: Card[] }) => {
             onDelete={onDelete}
             mainText={
               card.index === enabledCardIndex
-                ? '터치해서 비활성화'
-                : '터치해서 활성화'
+                ? t('card.touch_to_activate')
+                : t('card.touch_to_deactivate')
             }
           />
         )}
@@ -135,7 +142,7 @@ const CardList = (props: { cards: Card[] }) => {
   } else {
     return (
       <View style={styles.placeholderContainer}>
-        <PlaceholderText>카드를 추가해 주세요.</PlaceholderText>
+        <PlaceholderText>{t('main.please_add_a_card')}</PlaceholderText>
       </View>
     );
   }

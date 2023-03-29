@@ -8,6 +8,7 @@ import styled from 'styled-components/native';
 
 import CardConv from '../modules/CardConv';
 import { Card } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface CardViewProps {
   card: Card;
@@ -62,6 +63,8 @@ const BottomButtonText = styled.Text`
 
 const CardView = (props: CardViewProps) => {
   const { card, index, onPress: onPressFromProps, onEdit, onDelete } = props;
+
+  const { t } = useTranslation();
 
   const onPress = useCallback(() => {
     onPressFromProps?.(index);
@@ -126,13 +129,13 @@ const CardView = (props: CardViewProps) => {
                   style={styles.bottomMenuButton}
                   onPress={onPressEdit}
                 >
-                  <BottomButtonText>편집</BottomButtonText>
+                  <BottomButtonText>{t('card.edit')}</BottomButtonText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.bottomMenuButton}
                   onPress={onPressDelete}
                 >
-                  <BottomButtonText>삭제</BottomButtonText>
+                  <BottomButtonText>{t('card.remove')}</BottomButtonText>
                 </TouchableOpacity>
               </View>
             )}

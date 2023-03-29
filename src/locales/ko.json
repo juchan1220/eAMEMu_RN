@@ -1,0 +1,41 @@
+{
+  "title": {
+    "home": "홈",
+    "card_add": "카드 추가",
+    "card_edit": "카드 편집"
+  },
+  "alert": {
+    "title": {
+      "error": "오류",
+      "card_remove": "카드 삭제"
+    },
+    "body": {
+      "hcef_not_support": "이 기기는 HCE-F를 지원하지 않습니다. 다른 기기로 다시 시도해 주세요.",
+      "hcef_init_fail": "HCE-F 초기 설정에 실패했습니다.\n앱을 종료한 뒤, NFC를 활성화하고 다시 실행해 주세요.",
+      "card_remove": "\"{{cardName}}\" 카드를 삭제하시겠습니까?"
+    },
+    "button": {
+      "confirm": "확인",
+      "remove": "삭제",
+      "cancel": "취소"
+    }
+  },
+  "main": {
+    "please_add_a_card": "카드를 추가해 주세요."
+  },
+  "card": {
+    "touch_to_activate": "터치해서 활성화",
+    "touch_to_deactivate": "터치해서 비활성화",
+    "edit": "편집",
+    "remove": "삭제"
+  },
+  "card_edit": {
+    "loading_card_number": "카드 번호를 불러오는 중...",
+    "invalid_card_number": "잘못된 카드 번호입니다.",
+    "card_preview": "카드 미리보기",
+    "card_name": "카드 이름",
+    "card_number": "카드 번호",
+    "change_card_number": "카드 번호 변경",
+    "save": "저장"
+  }
+}
