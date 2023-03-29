@@ -1910,6 +1910,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@os-team/i18next-react-native-language-detector@^1.0.23":
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/@os-team/i18next-react-native-language-detector/-/i18next-react-native-language-detector-1.0.23.tgz#57c42d5c091b87abd5f50aa444827acf37b1c015"
+  integrity sha512-m2rtWS1vv4pATXt9Ro5cHD/zN2bl5cWrorRREVZz9CVJDZUTA4ic0teQDK+USMJGsOyLEeNx+Ax05TAd2PJ9lg==
+
 "@react-native-async-storage/async-storage@^1.17.11":
   version "1.17.11"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.11.tgz#7ec329c1b9f610e344602e806b04d7c928a2341d"
