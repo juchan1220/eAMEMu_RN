@@ -100,7 +100,7 @@ const CardList = (props: { cards: Card[] }) => {
         ],
       );
     },
-    [cards, deleteMutation],
+    [t, cards, deleteMutation],
   );
 
   const onEdit = useCallback(
