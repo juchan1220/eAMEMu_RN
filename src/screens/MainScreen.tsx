@@ -129,8 +129,8 @@ const CardList = (props: { cards: Card[] }) => {
             onDelete={onDelete}
             mainText={
               card.index === enabledCardIndex
-                ? t('card.touch_to_activate')
-                : t('card.touch_to_deactivate')
+                ? t('card.touch_to_deactivate')
+                : t('card.touch_to_activate')
             }
           />
         )}
